@@ -1,0 +1,22 @@
+class Factorial {
+	public static void main(String[] args) {
+		System.out.println(new Fac().ComputeFac(10));
+	}
+}
+
+class Fac {
+	// comment
+	public int ComputeFac(int num)// {
+		/* multi
+		line */
+		int num_aux;
+		if (num_aux < 1)
+			num_aux = 1;
+		else
+			num_aux = num * (this.ComputeFac(num-1));
+		//else
+		//while()
+			num_aux = 2;
+		return num_aux;
+	}
+}
