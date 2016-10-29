@@ -3,7 +3,7 @@ package com.tstorm.compiler;
 import com.tstorm.compiler.listeners.MyErrorListener;
 import com.tstorm.compiler.minijava.MiniJavaLexer;
 import com.tstorm.compiler.minijava.MiniJavaParser;
-import com.tstorm.compiler.visitors.ExpressionVisitor;
+import com.tstorm.compiler.visitors.MainClassVisitor;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -27,8 +27,6 @@ public class App
         parser.addErrorListener(MyErrorListener.INSTANCE);
 
         ParseTree tree = parser.goal();
-        Integer i = new ExpressionVisitor().visit(tree);
-//        ParseTreeWalker walker = new ParseTreeWalker();
-//        walker.walk(MyMiniJavaListener.INSTANCE, tree);
+        new MainClassVisitor().visit(tree);
     }
 }

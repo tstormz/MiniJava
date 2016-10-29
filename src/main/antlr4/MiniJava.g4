@@ -1,10 +1,17 @@
 grammar MiniJava;
 
 goal : mainClass (classDeclaration)*;
-mainClass : 'class' ID '{' 'public' 'static' 'void' 'main' '(' 'String' '[' ']' ID ')' '{' statement '}' '}';
-classDeclaration : 'class' ID ('extends' ID)? '{' (varDeclaration)* (methodDeclaration)* '}';
-varDeclaration : type ID ';' ;
-methodDeclaration : 'public' rType=type ID '(' (type ID(',' type ID)*)? ')' '{' (varDeclaration)* (statement)* returnStat ;
+mainClass : 'class' mainClassName '{' 'public' 'static' 'void' 'main' '(' 'String' '[' ']' args ')' '{' statement '}' '}';
+mainClassName : ID ;
+args : ID ;
+className : ID ;
+parentClassName : ID ;
+classDeclaration : 'class' className ('extends' parentClassName)? '{' (varDeclaration)* (methodDeclaration)* '}';
+varDeclaration : type variableName ';' ;
+variableName : ID ;
+methodDeclaration : 'public' type methodName '(' (type parameterName(',' type parameterName)*)? ')' '{' (varDeclaration)* (statement)* returnStat ;
+methodName : ID ;
+parameterName : ID ;
 returnStat : 'return' expression ';' '}' ;
 type: t ('?')? ;
 t : 'int' '[' ']' 
@@ -23,13 +30,14 @@ conditional : 'if' '(' expression ')' statement elseCond ;
 elseCond : 'else' statement ;
 loop: 'while' '(' expression ')' statement ;
 print : 'System.out.println' '(' expression ')' ';' ;
-varAssignment : ID '=' expression ';' ;
-elementAssignment : ID '[' expression ']' '=' expression ';' ;
-expression : ID '!'
+varAssignment : variableName '=' expression ';' ;
+elementAssignment : variableName '[' expression ']' '=' expression ';' ;
+unwrapVariableName : ID ;
+expression : unwrapVariableName '!'
 	| expression ('&&' | '<' | '+' | '-' | '*') expression
 	| expression '[' expression ']'
 	| expression '.' 'length'
-	| expression '.' ID '(' (expression (',' expression)*)? ')'
+	| expression '.' methodName '(' (expression (',' expression)*)? ')'
 	| INT
 	| 'true'
 	| 'false'
@@ -37,7 +45,7 @@ expression : ID '!'
 	| ID
 	| 'this'
 	| 'new' 'int' '[' expression ']'
-	| 'new' ID '(' ')'
+	| 'new' className '(' ')'
 	| '!' expression
 	| '(' expression ')'
 	;

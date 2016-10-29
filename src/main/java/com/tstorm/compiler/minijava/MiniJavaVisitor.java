@@ -23,6 +23,30 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMainClass(MiniJavaParser.MainClassContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#mainClassName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMainClassName(MiniJavaParser.MainClassNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#args}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgs(MiniJavaParser.ArgsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#className}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClassName(MiniJavaParser.ClassNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#parentClassName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParentClassName(MiniJavaParser.ParentClassNameContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#classDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -35,11 +59,29 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#variableName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableName(MiniJavaParser.VariableNameContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#methodDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#methodName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMethodName(MiniJavaParser.MethodNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#parameterName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParameterName(MiniJavaParser.ParameterNameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#returnStat}.
 	 * @param ctx the parse tree
@@ -100,6 +142,12 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitElementAssignment(MiniJavaParser.ElementAssignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#unwrapVariableName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnwrapVariableName(MiniJavaParser.UnwrapVariableNameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#expression}.
 	 * @param ctx the parse tree
