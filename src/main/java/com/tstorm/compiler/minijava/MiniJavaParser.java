@@ -1,13 +1,10 @@
 // Generated from /Users/tstorm/Documents/csc444/minijava/src/main/antlr4/MiniJava.g4 by ANTLR 4.5.3
-package com.tstorm.compiler;
+package com.tstorm.compiler.minijava;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class MiniJavaParser extends Parser {
@@ -112,12 +109,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_goal; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterGoal(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitGoal(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitGoal(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -170,12 +164,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_mainClass; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterMainClass(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitMainClass(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitMainClass(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -254,12 +245,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_classDeclaration; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterClassDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitClassDeclaration(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitClassDeclaration(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -340,12 +328,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_varDeclaration; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterVarDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitVarDeclaration(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitVarDeclaration(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -406,12 +391,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_methodDeclaration; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterMethodDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitMethodDeclaration(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitMethodDeclaration(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -518,12 +500,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_returnStat; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterReturnStat(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitReturnStat(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitReturnStat(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -563,12 +542,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitType(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitType(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -610,12 +586,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_t; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterT(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitT(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitT(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -698,12 +671,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitStatement(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitStatement(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -801,12 +771,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_conditional; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterConditional(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitConditional(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitConditional(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -850,12 +817,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_elseCond; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterElseCond(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitElseCond(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitElseCond(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -894,12 +858,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_loop; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterLoop(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitLoop(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitLoop(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -941,12 +902,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_print; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterPrint(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitPrint(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitPrint(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -989,12 +947,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_varAssignment; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterVarAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitVarAssignment(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitVarAssignment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1038,12 +993,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_elementAssignment; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterElementAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitElementAssignment(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitElementAssignment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1094,12 +1046,9 @@ public class MiniJavaParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_expression; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).enterExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MiniJavaListener ) ((MiniJavaListener)listener).exitExpression(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MiniJavaVisitor ) return ((MiniJavaVisitor<? extends T>)visitor).visitExpression(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 

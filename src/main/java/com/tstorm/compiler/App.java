@@ -1,9 +1,12 @@
 package com.tstorm.compiler;
 
+import com.tstorm.compiler.listeners.MyErrorListener;
+import com.tstorm.compiler.minijava.MiniJavaLexer;
+import com.tstorm.compiler.minijava.MiniJavaParser;
+import com.tstorm.compiler.visitors.ExpressionVisitor;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.IOException;
 
@@ -24,7 +27,8 @@ public class App
         parser.addErrorListener(MyErrorListener.INSTANCE);
 
         ParseTree tree = parser.goal();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(MyMiniJavaListener.INSTANCE, tree);
+        Integer i = new ExpressionVisitor().visit(tree);
+//        ParseTreeWalker walker = new ParseTreeWalker();
+//        walker.walk(MyMiniJavaListener.INSTANCE, tree);
     }
 }

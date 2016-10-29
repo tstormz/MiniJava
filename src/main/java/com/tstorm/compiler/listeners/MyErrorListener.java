@@ -1,5 +1,6 @@
-package com.tstorm.compiler;
+package com.tstorm.compiler.listeners;
 
+import com.tstorm.compiler.minijava.MiniJavaParser;
 import org.antlr.v4.runtime.*;
 
 /**
