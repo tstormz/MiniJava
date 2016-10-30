@@ -19,13 +19,16 @@ public class Goal {
         return classes.contains(klass);
     }
 
-    @Override
-    public String toString() {
-        String s = "main: " + mainClass.toString();
+    public void print() {
+        System.out.println("main: " + mainClass.toString());
         for (Klass klass : classes) {
-            s += "\n   class: " + klass.toString();
+            System.out.println("   class: " + klass.toString());
+            if (!klass.getFields().isEmpty()) {
+                for (Variable var : klass.getFields()) {
+                    System.out.println(var.toString());
+                }
+            }
         }
-        return s;
     }
 
 }

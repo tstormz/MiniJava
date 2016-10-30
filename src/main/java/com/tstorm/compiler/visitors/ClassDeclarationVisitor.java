@@ -11,7 +11,12 @@ public class ClassDeclarationVisitor extends MiniJavaBaseVisitor<Klass> {
 
     @Override
     public Klass visitClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
-        return new Klass(ctx.className().getText());
+        Klass klass = new Klass(ctx.className().getText());
+        VarDeclarationVisitor varDeclarationVisitor = new VarDeclarationVisitor();
+        for (MiniJavaParser.VarDeclarationContext var : ctx.varDeclaration()) {
+            klass.addField(var.accept(varDeclarationVisitor));
+        }
+        return klass;
     }
 
 }

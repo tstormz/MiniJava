@@ -10,7 +10,7 @@ import java.util.Optional;
 public class Klass {
 
     private final String className;
-    private final List<Field> fields = new ArrayList<>();
+    private final List<Variable> fields = new ArrayList<>();
     private final List<Method> methods = new ArrayList<>();
     private Optional<Klass> parent = Optional.empty();
 
@@ -21,6 +21,14 @@ public class Klass {
 
     public Klass(String className) {
         this.className = className;
+    }
+
+    public void addField(Variable v) {
+        fields.add(v);
+    }
+
+    public List<Variable> getFields() {
+        return fields;
     }
 
     @Override
