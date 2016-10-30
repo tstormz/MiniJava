@@ -16,6 +16,10 @@ public class ClassDeclarationVisitor extends MiniJavaBaseVisitor<Klass> {
         for (MiniJavaParser.VarDeclarationContext var : ctx.varDeclaration()) {
             klass.addField(var.accept(varDeclarationVisitor));
         }
+        MethodDeclarationVisitor methodDeclarationVisitor = new MethodDeclarationVisitor();
+        for (MiniJavaParser.MethodDeclarationContext method : ctx.methodDeclaration()) {
+            klass.addMethod(method.accept(methodDeclarationVisitor));
+        }
         return klass;
     }
 

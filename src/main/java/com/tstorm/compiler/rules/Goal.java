@@ -1,6 +1,7 @@
 package com.tstorm.compiler.rules;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tstorm on 10/29/16.
@@ -8,9 +9,9 @@ import java.util.List;
 public class Goal {
 
     private final Klass mainClass;
-    private final List<Klass> classes;
+    private final Set<Klass> classes;
 
-    public Goal(Klass mainClass, List<Klass> classes) {
+    public Goal(Klass mainClass, Set<Klass> classes) {
         this.mainClass = mainClass;
         this.classes = classes;
     }
@@ -26,6 +27,9 @@ public class Goal {
             if (!klass.getFields().isEmpty()) {
                 for (Variable var : klass.getFields()) {
                     System.out.println(var.toString());
+                }
+                for (Method method : klass.getMethods()) {
+                    System.out.println(method.toString());
                 }
             }
         }

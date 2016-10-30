@@ -9,10 +9,11 @@ parentClassName : ID ;
 classDeclaration : 'class' className ('extends' parentClassName)? '{' (varDeclaration)* (methodDeclaration)* '}';
 varDeclaration : type variableName ';' ;
 variableName : ID ;
-methodDeclaration : 'public' type methodName '(' (type parameterName(',' type parameterName)*)? ')' '{' (varDeclaration)* (statement)* returnStat ;
+methodDeclaration : 'public' returnType methodName '(' (type parameterName(',' type parameterName)*)? ')' '{' (varDeclaration)* (statement)* returnStatement ;
 methodName : ID ;
 parameterName : ID ;
-returnStat : 'return' expression ';' '}' ;
+returnType : type ;
+returnStatement : 'return' expression ';' '}' ;
 type: t ('?')? ;
 t : 'int' '[' ']' 
 	| 'boolean'

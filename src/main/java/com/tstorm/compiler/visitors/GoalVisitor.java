@@ -6,7 +6,9 @@ import com.tstorm.compiler.rules.Goal;
 import com.tstorm.compiler.rules.Klass;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tstorm on 10/29/16.
@@ -18,7 +20,7 @@ public class GoalVisitor extends MiniJavaBaseVisitor<Goal> {
         MainClassVisitor mainClassVisitor = new MainClassVisitor();
         Klass mainClass = ctx.mainClass().accept(mainClassVisitor);
         ClassDeclarationVisitor classDeclarationVisitor = new ClassDeclarationVisitor();
-        List<Klass> classes = new ArrayList<>();
+        Set<Klass> classes = new HashSet<>();
         for (MiniJavaParser.ClassDeclarationContext klass : ctx.classDeclaration()) {
             classes.add(klass.accept(classDeclarationVisitor));
         }

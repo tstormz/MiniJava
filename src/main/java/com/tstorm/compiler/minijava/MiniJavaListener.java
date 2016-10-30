@@ -1,4 +1,4 @@
-// Generated from /Users/tstorm/Documents/csc444/minijava/src/main/antlr4/MiniJava.g4 by ANTLR 4.5.3
+// Generated from /Users/tstorm/Documents/csc444/minijava/src/main/grammar/MiniJava.g4 by ANTLR 4.5.3
 package com.tstorm.compiler.minijava;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -28,6 +28,46 @@ public interface MiniJavaListener extends ParseTreeListener {
 	 */
 	void exitMainClass(MiniJavaParser.MainClassContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#mainClassName}.
+	 * @param ctx the parse tree
+	 */
+	void enterMainClassName(MiniJavaParser.MainClassNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#mainClassName}.
+	 * @param ctx the parse tree
+	 */
+	void exitMainClassName(MiniJavaParser.MainClassNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgs(MiniJavaParser.ArgsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgs(MiniJavaParser.ArgsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#className}.
+	 * @param ctx the parse tree
+	 */
+	void enterClassName(MiniJavaParser.ClassNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#className}.
+	 * @param ctx the parse tree
+	 */
+	void exitClassName(MiniJavaParser.ClassNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#parentClassName}.
+	 * @param ctx the parse tree
+	 */
+	void enterParentClassName(MiniJavaParser.ParentClassNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#parentClassName}.
+	 * @param ctx the parse tree
+	 */
+	void exitParentClassName(MiniJavaParser.ParentClassNameContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniJavaParser#classDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -48,6 +88,16 @@ public interface MiniJavaListener extends ParseTreeListener {
 	 */
 	void exitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#variableName}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableName(MiniJavaParser.VariableNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#variableName}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableName(MiniJavaParser.VariableNameContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniJavaParser#methodDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -58,15 +108,45 @@ public interface MiniJavaListener extends ParseTreeListener {
 	 */
 	void exitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiniJavaParser#returnStat}.
+	 * Enter a parse tree produced by {@link MiniJavaParser#methodName}.
 	 * @param ctx the parse tree
 	 */
-	void enterReturnStat(MiniJavaParser.ReturnStatContext ctx);
+	void enterMethodName(MiniJavaParser.MethodNameContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MiniJavaParser#returnStat}.
+	 * Exit a parse tree produced by {@link MiniJavaParser#methodName}.
 	 * @param ctx the parse tree
 	 */
-	void exitReturnStat(MiniJavaParser.ReturnStatContext ctx);
+	void exitMethodName(MiniJavaParser.MethodNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#parameterName}.
+	 * @param ctx the parse tree
+	 */
+	void enterParameterName(MiniJavaParser.ParameterNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#parameterName}.
+	 * @param ctx the parse tree
+	 */
+	void exitParameterName(MiniJavaParser.ParameterNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#returnType}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnType(MiniJavaParser.ReturnTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#returnType}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnType(MiniJavaParser.ReturnTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(MiniJavaParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(MiniJavaParser.ReturnStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniJavaParser#type}.
 	 * @param ctx the parse tree
@@ -157,6 +237,16 @@ public interface MiniJavaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitElementAssignment(MiniJavaParser.ElementAssignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#unwrapVariableName}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnwrapVariableName(MiniJavaParser.UnwrapVariableNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#unwrapVariableName}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnwrapVariableName(MiniJavaParser.UnwrapVariableNameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiniJavaParser#expression}.
 	 * @param ctx the parse tree

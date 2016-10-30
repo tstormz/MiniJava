@@ -2,6 +2,7 @@ package com.tstorm.compiler.visitors;
 
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
+import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 
 /**
@@ -11,7 +12,9 @@ public class VarDeclarationVisitor extends MiniJavaBaseVisitor<Variable> {
 
     @Override
     public Variable visitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx) {
-        return new Variable(ctx.variableName().getText());
+        String type = ctx.type().t().getText();
+        Type t = Type.fromString(type);
+        return new Variable(t, ctx.variableName().getText());
     }
 
 }

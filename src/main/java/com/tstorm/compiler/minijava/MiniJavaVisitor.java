@@ -1,4 +1,4 @@
-// Generated from /Users/tstorm/Documents/csc444/minijava/src/main/antlr4/MiniJava.g4 by ANTLR 4.5.3
+// Generated from /Users/tstorm/Documents/csc444/minijava/src/main/grammar/MiniJava.g4 by ANTLR 4.5.3
 package com.tstorm.compiler.minijava;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -83,11 +83,17 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParameterName(MiniJavaParser.ParameterNameContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniJavaParser#returnStat}.
+	 * Visit a parse tree produced by {@link MiniJavaParser#returnType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturnStat(MiniJavaParser.ReturnStatContext ctx);
+	T visitReturnType(MiniJavaParser.ReturnTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnStatement(MiniJavaParser.ReturnStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#type}.
 	 * @param ctx the parse tree

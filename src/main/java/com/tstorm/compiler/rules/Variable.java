@@ -5,15 +5,17 @@ package com.tstorm.compiler.rules;
  */
 public class Variable {
 
+    private final Type type;
     private final String variableName;
 
-    public Variable(String variableName) {
+    public Variable(Type type, String variableName) {
         this.variableName = variableName;
+        this.type = type;
     }
 
     @Override
     public String toString() {
-        return variableName;
+        return type + " " + variableName;
     }
 
 }

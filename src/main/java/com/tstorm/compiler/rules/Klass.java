@@ -1,8 +1,6 @@
 package com.tstorm.compiler.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by tstorm on 10/29/16.
@@ -10,8 +8,8 @@ import java.util.Optional;
 public class Klass {
 
     private final String className;
-    private final List<Variable> fields = new ArrayList<>();
-    private final List<Method> methods = new ArrayList<>();
+    private final Set<Variable> fields = new HashSet<>();
+    private final Set<Method> methods = new HashSet<>();
     private Optional<Klass> parent = Optional.empty();
 
     public Klass(String className, Klass parent) {
@@ -27,8 +25,16 @@ public class Klass {
         fields.add(v);
     }
 
-    public List<Variable> getFields() {
+    public Set<Variable> getFields() {
         return fields;
+    }
+
+    public void addMethod(Method m) {
+        methods.add(m);
+    }
+
+    public Set<Method> getMethods() {
+        return methods;
     }
 
     @Override
