@@ -7,26 +7,22 @@ import java.util.List;
  */
 public class Goal {
 
-    private final MainClass mainClass;
-    private final List<ClassDeclaration> classes;
+    private final Klass mainClass;
+    private final List<Klass> classes;
 
-    public Goal(MainClass mainClass, List<ClassDeclaration> classes) {
+    public Goal(Klass mainClass, List<Klass> classes) {
         this.mainClass = mainClass;
         this.classes = classes;
     }
 
-    public void addClass(ClassDeclaration klass) {
-        classes.add(klass);
-    }
-
-    public boolean isDefined(ClassDeclaration klass) {
+    public boolean isDefined(Klass klass) {
         return classes.contains(klass);
     }
 
     @Override
     public String toString() {
         String s = "main: " + mainClass.toString();
-        for (ClassDeclaration klass : classes) {
+        for (Klass klass : classes) {
             s += "\n   class: " + klass.toString();
         }
         return s;
