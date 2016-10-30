@@ -11,8 +11,8 @@ public class MainClassVisitor extends MiniJavaBaseVisitor<MainClass> {
 
     @Override
     public MainClass visitMainClass(MiniJavaParser.MainClassContext ctx) {
-        System.out.println(ctx.mainClassName().getText());
-        return null;
+        String mainClassName = ctx.mainClassName().getText();
+        return new MainClass(mainClassName);
     }
 
 }
