@@ -3,6 +3,7 @@ package com.tstorm.compiler.visitors;
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
 import com.tstorm.compiler.rules.Method;
+import com.tstorm.compiler.rules.Statement;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 
@@ -21,7 +22,11 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
         for (MiniJavaParser.ParameterContext param : ctx.parameter()) {
             params.add(param.accept(new ParameterVisitor()));
         }
-        return new Method(ctx.methodName().getText(), returnType, params);
+        Set<Statement> body = new HashSet<>();
+        for (MiniJavaParser.StatementContext statement : ctx.statement()) {
+            body.add(statement.accept(new StatementVisitor()));
+        }
+        return new Method(ctx.methodName().getText(), returnType, params, body);
     }
 
 }

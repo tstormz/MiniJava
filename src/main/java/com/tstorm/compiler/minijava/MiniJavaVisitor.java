@@ -166,4 +166,10 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpression(MiniJavaParser.ExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#rhs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRhs(MiniJavaParser.RhsContext ctx);
 }

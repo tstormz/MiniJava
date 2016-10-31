@@ -19,7 +19,7 @@ type: t ('?')? ;
 t : 'int' '[' ']' 
 	| 'boolean'
 	| 'int'
-	| ID
+	| className
 	;
 statement : conditional
 	| loop

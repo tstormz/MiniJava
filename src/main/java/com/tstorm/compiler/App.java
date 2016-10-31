@@ -20,14 +20,14 @@ public class App {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MiniJavaParser parser = new MiniJavaParser(tokens);
 
-        lexer.removeErrorListeners();
-        parser.removeErrorListeners();
-
-        lexer.addErrorListener(MyErrorListener.INSTANCE);
-        parser.addErrorListener(MyErrorListener.INSTANCE);
+//        lexer.removeErrorListeners();
+//        parser.removeErrorListeners();
+//
+//        lexer.addErrorListener(MyErrorListener.INSTANCE);
+//        parser.addErrorListener(MyErrorListener.INSTANCE);
 
         ParseTree tree = parser.goal();
         Goal g = new GoalVisitor().visit(tree);
-        g.print();
+        //g.print();
     }
 }
