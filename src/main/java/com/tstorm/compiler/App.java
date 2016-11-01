@@ -28,6 +28,6 @@ public class App {
 
         ParseTree tree = parser.goal();
         Goal g = new GoalVisitor().visit(tree);
-        //g.print();
+        g.print();
     }
 }

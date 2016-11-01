@@ -37,6 +37,14 @@ public class Klass {
         return methods;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public Optional<Klass> getParent() {
+        return parent;
+    }
+
     @Override
     public String toString() {
         return className;

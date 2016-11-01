@@ -35,6 +35,7 @@ public class StatementVisitor extends MiniJavaBaseVisitor<Statement> {
         }
         MiniJavaParser.PrintContext printContext = ctx.print();
         if (printContext != null) {
+//            System.out.println();
         }
         List<MiniJavaParser.StatementContext> nestedStatements = ctx.statement();
         if (nestedStatements != null && !nestedStatements.isEmpty()) {

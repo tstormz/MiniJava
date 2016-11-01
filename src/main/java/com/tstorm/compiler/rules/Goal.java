@@ -24,6 +24,9 @@ public class Goal {
         System.out.println("main: " + mainClass.toString());
         for (Klass klass : classes) {
             System.out.println("   class: " + klass.toString());
+            if (klass.getParent().isPresent()) {
+                System.out.println("      parent: " + klass.getParent().get().toString());
+            }
             if (!klass.getFields().isEmpty()) {
                 for (Variable var : klass.getFields()) {
                     System.out.println(var.toString());
