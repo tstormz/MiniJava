@@ -2,7 +2,9 @@ package com.tstorm.compiler.visitors;
 
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
-import com.tstorm.compiler.rules.*;
+import com.tstorm.compiler.rules.statements.Conditional;
+import com.tstorm.compiler.rules.statements.Loop;
+import com.tstorm.compiler.rules.statements.Statement;
 
 import java.util.List;
 
@@ -15,13 +17,11 @@ public class StatementVisitor extends MiniJavaBaseVisitor<Statement> {
     public Statement visitStatement(MiniJavaParser.StatementContext ctx) {
         MiniJavaParser.VarAssignmentContext varAssignmentContext = ctx.varAssignment();
         if (varAssignmentContext != null) {
-            Integer var = varAssignmentContext.accept(new VarAssignmentVisitor());
-            // TODO: return?
+            return varAssignmentContext.accept(new VarAssignmentVisitor());
         }
         MiniJavaParser.ElementAssignmentContext elementAssignmentContext = ctx.elementAssignment();
         if (elementAssignmentContext != null) {
-            Integer element = elementAssignmentContext.accept(new ElementAssignmentVisitor());
-            // TODO: return?
+            return elementAssignmentContext.accept(new ElementAssignmentVisitor());
         }
         MiniJavaParser.ConditionalContext conditionalContext = ctx.conditional();
         if (conditionalContext != null) {
@@ -40,11 +40,10 @@ public class StatementVisitor extends MiniJavaBaseVisitor<Statement> {
         List<MiniJavaParser.StatementContext> nestedStatements = ctx.statement();
         if (nestedStatements != null && !nestedStatements.isEmpty()) {
             for (MiniJavaParser.StatementContext statement : nestedStatements) {
-                statement.accept(new StatementVisitor());
+                return statement.accept(new StatementVisitor());
             }
         }
-//        return new Statement();
-        return new DefaultStatement();
+        return new Statement();
     }
 
 }

@@ -15,7 +15,7 @@ public class ClassDeclarationVisitor extends MiniJavaBaseVisitor<Klass> {
     public Klass visitClassDeclaration(MiniJavaParser.ClassDeclarationContext ctx) {
         Klass klass;
         if (ctx.parentClassName() != null) {
-            Optional<Klass> parent = GoalVisitor.findKlass(ctx.parentClassName().getText());
+            Optional<Klass> parent = GoalVisitor.findClass(ctx.parentClassName().getText());
             if (parent.isPresent()) {
                 klass = new Klass(ctx.className().getText(), parent.get());
             } else {

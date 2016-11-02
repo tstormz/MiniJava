@@ -15,7 +15,7 @@ public class Variable {
 
     @Override
     public String toString() {
-        return type + " " + variableName;
+        return "   " + type + " " + variableName;
     }
 
 }

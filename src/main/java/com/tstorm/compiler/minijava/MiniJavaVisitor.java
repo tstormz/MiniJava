@@ -155,6 +155,12 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElementAssignment(MiniJavaParser.ElementAssignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#indexExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIndexExpr(MiniJavaParser.IndexExprContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiniJavaParser#unwrapVariableName}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -167,9 +173,21 @@ public interface MiniJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpression(MiniJavaParser.ExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniJavaParser#rhs}.
+	 * Visit a parse tree produced by {@link MiniJavaParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRhs(MiniJavaParser.RhsContext ctx);
+	T visitConstant(MiniJavaParser.ConstantContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#identifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier(MiniJavaParser.IdentifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniJavaParser#intLit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntLit(MiniJavaParser.IntLitContext ctx);
 }

@@ -2,15 +2,18 @@ package com.tstorm.compiler.visitors;
 
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
+import com.tstorm.compiler.rules.statements.Assignment;
+import com.tstorm.compiler.rules.statements.Statement;
 
 /**
  * Created by tstorm on 10/31/16.
  */
-public class VarAssignmentVisitor extends MiniJavaBaseVisitor<Integer> {
+public class VarAssignmentVisitor extends MiniJavaBaseVisitor<Statement> {
 
     @Override
-    public Integer visitVarAssignment(MiniJavaParser.VarAssignmentContext ctx) {
-        return new Integer(0);
+    public Statement visitVarAssignment(MiniJavaParser.VarAssignmentContext ctx) {
+        ctx.expression().accept(new ExpressionVisitor());
+        return new Assignment(ctx.variableName().getText(), ctx.expression().accept(new ExpressionVisitor()));
     }
 
 }

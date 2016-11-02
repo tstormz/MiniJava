@@ -16,16 +16,20 @@ public class Goal {
         this.classes = classes;
     }
 
-    public boolean isDefined(Klass klass) {
-        return classes.contains(klass);
+    public void parse() {
+        for (Klass k : classes) {
+            for (Method m : k.getMethods()) {
+                // resolve variables
+            }
+        }
     }
 
     public void print() {
         System.out.println("main: " + mainClass.toString());
         for (Klass klass : classes) {
-            System.out.println("   class: " + klass.toString());
+            System.out.println("class: " + klass.toString());
             if (klass.getParent().isPresent()) {
-                System.out.println("      parent: " + klass.getParent().get().toString());
+                System.out.println(" parent: " + klass.getParent().get().toString());
             }
             if (!klass.getFields().isEmpty()) {
                 for (Variable var : klass.getFields()) {

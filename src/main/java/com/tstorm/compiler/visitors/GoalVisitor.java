@@ -25,7 +25,7 @@ public class GoalVisitor extends MiniJavaBaseVisitor<Goal> {
         return new Goal(mainClass, classes);
     }
 
-    public static Optional<Klass> findKlass(String className) {
+    public static Optional<Klass> findClass(String className) {
         for (Klass k : classes) {
             if (k.getClassName().equals(className)) {
                 return Optional.of(k);

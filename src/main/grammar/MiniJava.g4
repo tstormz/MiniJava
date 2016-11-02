@@ -33,24 +33,24 @@ elseCond : 'else' statement ;
 loop: 'while' '(' expression ')' statement ;
 print : 'System.out.println' '(' expression ')' ';' ;
 varAssignment : variableName '=' expression ';' ;
-elementAssignment : variableName '[' expression ']' '=' expression ';' ;
+elementAssignment : variableName '[' indexExpr ']' '=' expression ';' ;
+indexExpr : expression ;
 unwrapVariableName : ID ;
 expression : unwrapVariableName '!'
-	| expression ('&&' | '<' | '+' | '-' | '*') expression
+    | expression ('&&' | '<' | '+' | '-' | '*') expression
 	| expression '[' expression ']'
 	| expression '.' 'length'
 	| expression '.' methodName '(' (expression (',' expression)*)? ')'
-	| INT
-	| 'true'
-	| 'false'
-	| 'null'
-	| ID
-	| 'this'
+	| identifier
+	| constant
 	| 'new' 'int' '[' expression ']'
 	| 'new' className '(' ')'
 	| '!' expression
 	| '(' expression ')'
 	;
+constant : 'true' | 'false' | 'null' | intLit | 'this' ;
+identifier : ID ;
+intLit : INT ;
 INT : [0-9] [0-9]*;
 ID : [a-zA-Z] [a-zA-Z_$0-9]*;
 WS : [\t\r\n' ']+ -> skip;
