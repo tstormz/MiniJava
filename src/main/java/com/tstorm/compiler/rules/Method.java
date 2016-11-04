@@ -26,6 +26,10 @@ public class Method {
         this.body = body;
     }
 
+    public List<Statement> getBody() {
+        return body;
+    }
+
     @Override
     public String toString() {
         String s = "   " + returnType + " " + methodName + "()";

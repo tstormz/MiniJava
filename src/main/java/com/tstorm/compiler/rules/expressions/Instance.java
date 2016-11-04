@@ -1,11 +1,12 @@
 package com.tstorm.compiler.rules.expressions;
 
 import com.tstorm.compiler.rules.Type;
+import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
 /**
  * Created by tstorm on 11/2/16.
  */
-public class Instance implements Expression {
+public class Instance extends Expression {
 
     private Expression arrayIndex;
     private String className;
@@ -19,7 +20,8 @@ public class Instance implements Expression {
     }
 
     @Override
-    public Type resolveToType() {
+    public Type accept(ExpressionVisitor v) {
+        v.visit(this);
         return null;
     }
 }

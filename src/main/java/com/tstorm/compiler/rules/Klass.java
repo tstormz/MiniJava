@@ -25,7 +25,11 @@ public class Klass {
         fields.add(v);
     }
 
-    public Set<Variable> getFields() {
+    public Map<String, Type> getFields() {
+        Map<String, Type> fields = new HashMap<>();
+        for (Variable v : this.fields) {
+            fields.put(v.getVariableName(), v.getType());
+        }
         return fields;
     }
 

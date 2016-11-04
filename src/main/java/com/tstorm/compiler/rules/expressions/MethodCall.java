@@ -1,13 +1,14 @@
 package com.tstorm.compiler.rules.expressions;
 
 import com.tstorm.compiler.rules.Type;
+import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
 import java.util.List;
 
 /**
  * Created by tstorm on 11/2/16.
  */
-public class MethodCall implements Expression {
+public class MethodCall extends Expression {
 
     private final Expression caller;
     private final String methodName;
@@ -19,11 +20,6 @@ public class MethodCall implements Expression {
         this.args = args;
     }
 
-    @Override
-    public Type resolveToType() {
-        return null;
-    }
-
     public String toString() {
         String s = "";
         for (Expression arg : args) {
@@ -33,4 +29,9 @@ public class MethodCall implements Expression {
         return s + ")";
     }
 
+    @Override
+    public Type accept(ExpressionVisitor v) {
+        v.visit(this);
+        return null;
+    }
 }

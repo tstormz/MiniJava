@@ -32,6 +32,7 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
         for (MiniJavaParser.StatementContext statement : ctx.statement()) {
             body.add(statement.accept(new StatementVisitor()));
         }
+        body.add(ctx.returnStatement().accept(new ReturnStatementVisitor()));
         return new Method(ctx.methodName().getText(), returnType, params, locals, body);
     }
 

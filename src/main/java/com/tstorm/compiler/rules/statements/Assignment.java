@@ -1,6 +1,7 @@
 package com.tstorm.compiler.rules.statements;
 
 import com.tstorm.compiler.rules.expressions.Expression;
+import com.tstorm.compiler.typechecker.Visitor;
 
 /**
  * Created by tstorm on 11/1/16.
@@ -19,4 +20,8 @@ public class Assignment extends Statement {
         return srcVariableName + " = " + expression.toString();
     }
 
+    @Override
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
 }

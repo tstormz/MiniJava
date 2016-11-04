@@ -3,6 +3,7 @@ package com.tstorm.compiler.visitors;
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
 import com.tstorm.compiler.rules.statements.Conditional;
+import com.tstorm.compiler.rules.statements.DefaultStatement;
 import com.tstorm.compiler.rules.statements.Loop;
 import com.tstorm.compiler.rules.statements.Statement;
 
@@ -37,13 +38,7 @@ public class StatementVisitor extends MiniJavaBaseVisitor<Statement> {
         if (printContext != null) {
 //            System.out.println();
         }
-        List<MiniJavaParser.StatementContext> nestedStatements = ctx.statement();
-        if (nestedStatements != null && !nestedStatements.isEmpty()) {
-            for (MiniJavaParser.StatementContext statement : nestedStatements) {
-                return statement.accept(new StatementVisitor());
-            }
-        }
-        return new Statement();
+        return new DefaultStatement(ctx.statement());
     }
 
 }

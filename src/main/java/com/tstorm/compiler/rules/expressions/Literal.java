@@ -1,11 +1,12 @@
 package com.tstorm.compiler.rules.expressions;
 
 import com.tstorm.compiler.rules.Type;
+import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
 /**
  * Created by tstorm on 11/1/16.
  */
-public class Literal implements Expression {
+public class Literal extends Expression {
 
     private String value;
 
@@ -13,13 +14,23 @@ public class Literal implements Expression {
         this.value = value;
     }
 
-    @Override
-    public Type resolveToType() {
-        return null;
-    }
-
     public String toString() {
         return value;
     }
 
+    @Override
+    public Type accept(ExpressionVisitor v) {
+        v.visit(this);
+        return null;
+    }
+
+    public Type getType() {
+        switch (value) {
+            case "true":
+            case "false":
+                return Type.BOOLEAN;
+            default:
+                return Type.INT;
+        }
+    }
 }

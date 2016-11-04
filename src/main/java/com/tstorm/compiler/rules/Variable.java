@@ -13,6 +13,14 @@ public class Variable {
         this.type = type;
     }
 
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "   " + type + " " + variableName;

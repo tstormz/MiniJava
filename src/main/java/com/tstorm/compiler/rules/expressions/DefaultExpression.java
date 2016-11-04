@@ -1,12 +1,12 @@
 package com.tstorm.compiler.rules.expressions;
 
 import com.tstorm.compiler.rules.Type;
-import com.tstorm.compiler.rules.expressions.Expression;
+import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
 /**
  * Created by tstorm on 11/1/16.
  */
-public class DefaultExpression implements Expression {
+public class DefaultExpression extends Expression {
 
     private Expression expression;
 
@@ -17,8 +17,8 @@ public class DefaultExpression implements Expression {
     }
 
     @Override
-    public Type resolveToType() {
+    public Type accept(ExpressionVisitor v) {
+        v.visit(this);
         return null;
     }
-
 }

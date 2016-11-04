@@ -1,6 +1,7 @@
 package com.tstorm.compiler.rules;
 
-import java.util.List;
+import com.tstorm.compiler.typechecker.TypeChecker;
+
 import java.util.Set;
 
 /**
@@ -18,9 +19,7 @@ public class Goal {
 
     public void parse() {
         for (Klass k : classes) {
-            for (Method m : k.getMethods()) {
-                // resolve variables
-            }
+            new TypeChecker(k);
         }
     }
 
@@ -32,9 +31,9 @@ public class Goal {
                 System.out.println(" parent: " + klass.getParent().get().toString());
             }
             if (!klass.getFields().isEmpty()) {
-                for (Variable var : klass.getFields()) {
-                    System.out.println(var.toString());
-                }
+//                for (Variable var : klass.getFields()) {
+//                    System.out.println(var.toString());
+//                }
                 for (Method method : klass.getMethods()) {
                     System.out.println(method.toString());
                 }

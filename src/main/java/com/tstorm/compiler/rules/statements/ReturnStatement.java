@@ -4,20 +4,18 @@ import com.tstorm.compiler.rules.expressions.Expression;
 import com.tstorm.compiler.typechecker.Visitor;
 
 /**
- * Created by tstorm on 10/31/16.
+ * Created by tstorm on 11/2/16.
  */
-public class Loop extends Statement {
+public class ReturnStatement extends Statement {
 
     private final Expression expression;
-    private final Statement statement;
 
-    public Loop(Expression expression, Statement statement) {
+    public ReturnStatement(Expression expression) {
         this.expression = expression;
-        this.statement = statement;
     }
 
     public String toString() {
-        return "while (" + expression.toString() + ")\n   " + statement.toString();
+        return "return " + expression.toString();
     }
 
     @Override

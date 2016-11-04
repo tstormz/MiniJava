@@ -8,7 +8,8 @@ public enum Type {
     INT ("int"),
     BOOLEAN ("boolean"),
     ARRAY ("int[]"),
-    BAD_TYPE("");
+    CLASS (""),
+    BAD_TYPE ("");
 
     private String text;
 
@@ -26,7 +27,7 @@ public enum Type {
                 return t;
             }
         }
-        return BAD_TYPE;
+        return CLASS;
     }
 
 }
