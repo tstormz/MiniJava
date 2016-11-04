@@ -20,8 +20,7 @@ public class Literal extends Expression {
 
     @Override
     public Type accept(ExpressionVisitor v) {
-        v.visit(this);
-        return null;
+        return v.visit(this);
     }
 
     public Type getType() {

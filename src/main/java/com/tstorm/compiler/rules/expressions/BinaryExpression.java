@@ -25,6 +25,10 @@ public class BinaryExpression extends Expression {
         return right;
     }
 
+    public String getOperator() {
+        return op;
+    }
+
     public String toString() {
         return left.toString() + op + right.toString();
     }

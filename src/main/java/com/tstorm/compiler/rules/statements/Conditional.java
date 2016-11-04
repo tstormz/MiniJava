@@ -31,8 +31,8 @@ public class Conditional extends Statement {
     }
 
     public String toString() {
-        return "if(" + expression.toString() + ")\n   " +
-                ifStatement.toString() + "\nelse\n   " + elseStatement.toString();
+        return "if(" + expression.toString() + ")" +
+                ifStatement.toString() + "\nelse" + elseStatement.toString();
     }
 
     @Override

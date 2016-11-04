@@ -26,8 +26,31 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(BinaryExpression expr) {
-        System.out.println(expr.getLeft());
-        System.out.println(expr.getRight());
+        Type left = expr.getLeft().accept(this);
+        Type right = expr.getRight().accept(this);
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
+        switch (expr.getOperator()) {
+            case "+":
+            case "-":
+                if (left == Type.INT && right == Type.INT) {
+                    return Type.INT;
+                } else {
+                    return Type.BAD_TYPE;
+                }
+            case "<":
+                if (left == Type.INT && right == Type.INT) {
+                    return Type.BOOLEAN;
+                } else {
+                    return Type.BAD_TYPE;
+                }
+            case "&&":
+                if (left == Type.BOOLEAN && right == Type.BOOLEAN) {
+                    return Type.BOOLEAN;
+                } else {
+                    return Type.BAD_TYPE;
+                }
+        }
         return Type.BAD_TYPE;
     }
 
@@ -38,7 +61,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(DefaultExpression expr) {
-        return null;
+        return Type.ARRAY;
     }
 
     @Override
@@ -58,7 +81,19 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(MethodCall expr) {
+        System.out.println("method call");
         return null;
+    }
+
+    /**
+     * Connects the Default Expression's nested expression
+     *
+     * @param expr default expression
+     * @return the result of visiting the nested expression
+     */
+    @Override
+    public Type visit(Expression expr) {
+        return expr.accept(this);
     }
 
 }

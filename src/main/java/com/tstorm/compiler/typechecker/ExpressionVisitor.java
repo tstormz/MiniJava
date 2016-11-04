@@ -17,5 +17,6 @@ public abstract class ExpressionVisitor {
     public abstract Type visit(Instance expr);
     public abstract Type visit(Literal expr);
     public abstract Type visit(MethodCall expr);
+    public abstract Type visit(Expression expr);
 
 }
