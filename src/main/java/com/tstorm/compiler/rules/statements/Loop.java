@@ -16,6 +16,14 @@ public class Loop extends Statement {
         this.statement = statement;
     }
 
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public Statement getStatement() {
+        return statement;
+    }
+
     public String toString() {
         return "while (" + expression.toString() + ")\n   " + statement.toString();
     }

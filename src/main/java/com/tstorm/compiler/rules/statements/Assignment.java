@@ -16,6 +16,10 @@ public class Assignment extends Statement {
         this.expression = expression;
     }
 
+    public Expression getExpression() {
+        return expression;
+    }
+
     public String toString() {
         return srcVariableName + " = " + expression.toString();
     }

@@ -14,6 +14,9 @@ public class ParameterVisitor extends MiniJavaBaseVisitor<Variable> {
     public Variable visitParameter(MiniJavaParser.ParameterContext ctx) {
         String type = ctx.type().t().getText();
         Type t = Type.fromString(type);
+        if (t == Type.CLASS) {
+            return new Variable(t, type, ctx.parameterName().getText());
+        }
         return new Variable(t, ctx.parameterName().getText());
     }
 

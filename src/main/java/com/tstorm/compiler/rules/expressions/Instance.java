@@ -19,6 +19,10 @@ public class Instance extends Expression {
         this.className = className;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     @Override
     public Type accept(ExpressionVisitor v) {
         v.visit(this);

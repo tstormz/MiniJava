@@ -31,10 +31,12 @@ public class Goal {
                 System.out.println(" parent: " + klass.getParent().get().toString());
             }
             if (!klass.getFields().isEmpty()) {
-//                for (Variable var : klass.getFields()) {
-//                    System.out.println(var.toString());
-//                }
-                for (Method method : klass.getMethods()) {
+                for (Variable var : klass.getFieldSet().values()) {
+                    System.out.println(var.toString());
+                }
+            }
+            if (!klass.getMethods().isEmpty()) {
+                for (Method method : klass.getMethodSet().values()) {
                     System.out.println(method.toString());
                 }
             }

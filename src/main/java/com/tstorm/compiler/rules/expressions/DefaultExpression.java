@@ -18,6 +18,10 @@ public class DefaultExpression extends Expression {
         this.expression = Optional.of(expression);
     }
 
+    public Optional<Expression> getExpression() {
+        return expression;
+    }
+
     public String toString() {
         if (expression.isPresent()) {
             return "(" + expression.get().toString() + ")";

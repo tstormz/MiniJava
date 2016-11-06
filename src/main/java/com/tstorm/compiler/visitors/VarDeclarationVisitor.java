@@ -14,6 +14,9 @@ public class VarDeclarationVisitor extends MiniJavaBaseVisitor<Variable> {
     public Variable visitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx) {
         String type = ctx.type().t().getText();
         Type t = Type.fromString(type);
+        if (t == Type.CLASS) {
+            return new Variable(t, type, ctx.variableName().getText());
+        }
         return new Variable(t, ctx.variableName().getText());
     }
 

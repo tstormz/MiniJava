@@ -13,8 +13,10 @@ public class TypeChecker extends Visitor {
     private ExpressionTypeChecker expressionTypeChecker;
 
     public TypeChecker(Klass k) {
-        expressionTypeChecker = new ExpressionTypeChecker(new SymbolTable(k.getFields()));
-        for (Method m : k.getMethods()) {
+        SymbolTable symbolTable = new SymbolTable(k);
+        expressionTypeChecker = new ExpressionTypeChecker(symbolTable);
+        for (Method m : k.getMethodSet().values()) {
+            expressionTypeChecker.setCurrentMethod(m);
             for (Statement stat : m.getBody()) {
                 stat.accept(this);
             }
@@ -36,6 +38,7 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(Assignment statement) {
         System.out.println("assignment");
+        statement.getExpression().accept(expressionTypeChecker);
     }
 
     @Override
@@ -46,6 +49,8 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(Loop statement) {
         System.out.println("loop");
+        statement.getExpression().accept(expressionTypeChecker);
+        statement.getStatement().accept(this);
     }
 
     @Override

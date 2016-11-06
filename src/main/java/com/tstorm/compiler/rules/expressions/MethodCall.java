@@ -20,18 +20,46 @@ public class MethodCall extends Expression {
         this.args = args;
     }
 
+    public Expression getCaller() {
+        return caller;
+    }
+
+    public List<Expression> getArgs() {
+        return args;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getCallerId(Expression e) {
+        if (e instanceof Identifier /*|| e instanceof Instance*/) {
+            return e.toString();
+        } else if (e instanceof MethodCall) {
+            return getCallerId(((MethodCall) e).caller);
+        } else if (e instanceof DefaultExpression) {
+            if (((DefaultExpression) e).getExpression().isPresent()) {
+                return getCallerId(((DefaultExpression) e).getExpression().get());
+            } else {
+               return "ERROR";
+            }
+        } else {
+            return "ERROR";
+        }
+    }
+
     public String toString() {
         String s = "";
         for (Expression arg : args) {
             s += ", " + arg.toString();
         }
-        s = caller.toString() + "." + methodName + "(" + s.substring(2);
+        String args = this.args.isEmpty() ? "" : s.substring(2);
+        s = caller.toString() + "." + methodName + "(" + args;
         return s + ")";
     }
 
     @Override
     public Type accept(ExpressionVisitor v) {
-        v.visit(this);
-        return null;
+        return v.visit(this);
     }
 }

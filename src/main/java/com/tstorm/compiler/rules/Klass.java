@@ -8,8 +8,8 @@ import java.util.*;
 public class Klass {
 
     private final String className;
-    private final Set<Variable> fields = new HashSet<>();
-    private final Set<Method> methods = new HashSet<>();
+    private final Map<String, Variable> fields = new HashMap<>();
+    private final Map<String, Method> methods = new HashMap<>();
     private Optional<Klass> parent = Optional.empty();
 
     public Klass(String className, Klass parent) {
@@ -22,22 +22,34 @@ public class Klass {
     }
 
     public void addField(Variable v) {
-        fields.add(v);
+        fields.put(v.getVariableName(), v);
+    }
+
+    public Map<String, Variable> getFieldSet() {
+        return fields;
     }
 
     public Map<String, Type> getFields() {
         Map<String, Type> fields = new HashMap<>();
-        for (Variable v : this.fields) {
+        for (Variable v : this.fields.values()) {
             fields.put(v.getVariableName(), v.getType());
         }
         return fields;
     }
 
     public void addMethod(Method m) {
-        methods.add(m);
+        methods.put(m.getMethodName(), m);
     }
 
-    public Set<Method> getMethods() {
+    public Map<String, Method> getMethodSet() {
+        return methods;
+    }
+
+    public Map<String, Type> getMethods() {
+        Map<String, Type> methods = new HashMap<>();
+        for (Method m : this.methods.values()) {
+            methods.put(m.getMethodName(), m.getReturnType());
+        }
         return methods;
     }
 
@@ -47,6 +59,10 @@ public class Klass {
 
     public Optional<Klass> getParent() {
         return parent;
+    }
+
+    public boolean hasMethod(String methodId) {
+        return methods.containsKey(methodId);
     }
 
     @Override

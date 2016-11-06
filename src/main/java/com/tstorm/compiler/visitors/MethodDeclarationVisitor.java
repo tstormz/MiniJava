@@ -33,6 +33,9 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
             body.add(statement.accept(new StatementVisitor()));
         }
         body.add(ctx.returnStatement().accept(new ReturnStatementVisitor()));
+        if (returnType == Type.CLASS) {
+            return new Method(ctx.methodName().getText(), returnType, ctx.returnType().getText(), params, locals, body);
+        }
         return new Method(ctx.methodName().getText(), returnType, params, locals, body);
     }
 
