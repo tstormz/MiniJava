@@ -15,18 +15,18 @@ public class Method {
     private final String methodName;
     private final Type returnType;
     private Optional<String> classReturnType;
-    private final Map<String, Variable> parameters;
+    private final List<Variable> parameters;
     private final Map<String, Variable> locals;
     private List<Statement> body = new ArrayList<>();
 
     public Method(String methodName, Type returnType, String classReturnType,
-                  Map<String, Variable> params, Map<String, Variable> locals,
+                  List<Variable> params, Map<String, Variable> locals,
                   List<Statement> body) {
         this(methodName, returnType, params, locals, body);
         this.classReturnType = Optional.of(classReturnType);
     }
 
-    public Method(String methodName, Type returnType, Map<String, Variable> params,
+    public Method(String methodName, Type returnType, List<Variable> params,
                   Map<String, Variable> locals, List<Statement> body) {
         this.methodName = methodName;
         this.returnType = returnType;
@@ -48,20 +48,37 @@ public class Method {
         return returnType;
     }
 
+    public Optional<String> getClassReturnType() {
+        return classReturnType;
+    }
+
+    public List<Variable> getParameters() {
+        return parameters;
+    }
+
     public Optional<Variable> findVariable(String callerId) {
         Optional<Variable> variable;
         variable = Optional.ofNullable(locals.get(callerId));
         if (!variable.isPresent()) {
-            variable = Optional.ofNullable(parameters.get(callerId));
+            variable = Optional.ofNullable(findParameter(callerId));
         }
         return variable;
+    }
+
+    private Variable findParameter(String callerId) {
+        for (Variable v : parameters) {
+            if (v.getVariableName().equals(callerId)) {
+                return v;
+            }
+        }
+        return null;
     }
 
     @Override
     public String toString() {
         String s = "   " + returnType + " " + methodName + "()";
         if (!parameters.isEmpty()) {
-            for (Variable v : parameters.values()) {
+            for (Variable v : parameters) {
                 s += "\n   param: " + v.toString();
             }
         }

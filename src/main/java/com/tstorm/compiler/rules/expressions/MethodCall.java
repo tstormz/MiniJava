@@ -3,6 +3,7 @@ package com.tstorm.compiler.rules.expressions;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ public class MethodCall extends Expression {
     private final Expression caller;
     private final String methodName;
     private final List<Expression> args;
+    private final List<Type> argsType = new ArrayList<>();
 
     public MethodCall(Expression caller, String methodName, List<Expression> args) {
         this.caller = caller;
@@ -30,6 +32,14 @@ public class MethodCall extends Expression {
 
     public String getMethodName() {
         return methodName;
+    }
+
+    public List<Type> getArgsType() {
+        return argsType;
+    }
+
+    public void addArgType(Type t) {
+        argsType.add(t);
     }
 
     public String getCallerId(Expression e) {

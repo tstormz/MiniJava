@@ -21,9 +21,7 @@ public class SymbolTable {
         this.varIdentifierMap = k.getFields();
         this.methodIdentifierMap = k.getMethods();
         for (Variable v : k.getFieldSet().values()) {
-//            System.out.println("--- " + v.getVariableName());
             if (v.getClassType().isPresent()) {
-//                System.out.println("adding " + v.getClassType().get());
                 idToClassNameMap.put(v.getVariableName(), v.getClassType().get());
             }
         }
@@ -35,10 +33,6 @@ public class SymbolTable {
 
     public Type getMethodType(String symbol) {
         return methodIdentifierMap.get(symbol);
-    }
-
-    public Optional<String> getClassReference(String symbol) {
-        return Optional.ofNullable(idToClassNameMap.get(symbol));
     }
 
 }

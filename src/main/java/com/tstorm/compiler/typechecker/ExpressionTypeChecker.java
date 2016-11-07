@@ -8,6 +8,7 @@ import com.tstorm.compiler.rules.expressions.*;
 import com.tstorm.compiler.visitors.GoalVisitor;
 
 import java.util.Optional;
+import java.util.Stack;
 
 /**
  * Created by tstorm on 11/2/16.
@@ -16,6 +17,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     private SymbolTable symbolTable;
     private Method currentMethod;
+    private Stack<Klass> anonymousClasses = new Stack<>();
 
     public ExpressionTypeChecker(SymbolTable table) {
         this.symbolTable = table;
@@ -105,39 +107,90 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         return expr.getType();
     }
 
+    private boolean anonymousFlag = false;
+
     @Override
     public Type visit(MethodCall expr) {
-        System.out.println("method call");
-        if (expr.getCaller() instanceof Identifier) {
-            confirmMethodExists(expr.getCaller().toString(), expr.getMethodName());
-        } else {
-            confirmMethodExists(expr.getCallerId(expr), expr.getMethodName());
-        }
-//        expr.getCaller().accept(this);
+        System.out.println("method call ");
         for (Expression e : expr.getArgs()) {
-            e.accept(this);
+            expr.addArgType(e.accept(this));
         }
-        return Type.BAD_TYPE;
-    }
-
-    private void confirmMethodExists(String callerId, String methodId) {
-//        System.err.println("caller: " + callerId);
-        // resolve caller
-        Optional<Variable> v = currentMethod.findVariable(callerId);
-        if (v.isPresent() && v.get().getClassType().isPresent()) {
-//            Optional<Klass> klass = symbolTable.getClassReference(v.get().getClassType().get());
-            Optional<Klass> klass = GoalVisitor.findClass(v.get().getClassType().get());
-            if (klass.isPresent()) {
-                if (klass.get().hasMethod(methodId)) {
-                    System.out.println("Found! " + methodId);
-                } else {
-                    System.err.println("no " + methodId + " method found for " + callerId);
-                }
+        if (expr.getCaller() instanceof DefaultExpression) {
+            System.out.println("ANONYMOUS: " + expr.toString());
+            anonymousFlag = true;
+            Type caller = expr.getCaller().accept(this);
+            if (!anonymousClasses.isEmpty()) {
+                confirmMethodExists(Optional.of(anonymousClasses.pop()), expr);
+            }
+            // TODO introduce an anonymous return type as the caller
+            return caller;
+        } else if (expr.getCaller() instanceof Identifier) {
+            if (resolveMethodCall(expr)) {
+                return Type.CLASS;
             } else {
-                System.err.println("class type not present for " + callerId);
+                anonymousFlag = false;
+                return Type.BAD_TYPE;
             }
         } else {
+            System.err.println("err");
+            return Type.BAD_TYPE;
+        }
+    }
+
+    private boolean resolveMethodCall(MethodCall methodCall) {
+        String callerId = methodCall.getCaller().toString();
+        Optional<Variable> v = currentMethod.findVariable(callerId);
+        if (v.isPresent() && v.get().getClassType().isPresent()) {
+            return confirmMethodExists(GoalVisitor.findClass(v.get().getClassType().get()), methodCall);
+        } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
+            return false;
+        }
+    }
+
+    private boolean confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
+        if (klass.isPresent()) {
+            String methodId = methodCall.getMethodName();
+            if (klass.get().hasMethod(methodId)) {
+                System.out.println("Found! " + methodId);
+                return verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
+            } else {
+                System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString());
+                return false;
+            }
+        } else {
+            System.err.println("class type not present for " + methodCall.getCaller().toString());
+            return false;
+        }
+    }
+
+    private boolean verifyMethodSignature(Method method, MethodCall methodCall) {
+        for (int i = 0; i < methodCall.getArgsType().size(); i++) {
+            Type param = method.getParameters().get(i).getType();
+            Type arg = methodCall.getArgsType().get(i);
+            if (param != arg) {
+                System.err.println("found argument of type " + arg + ", expecting " + param );
+                return false;
+            }
+        }
+        if (anonymousFlag) {
+            pushAnonymousClass(method);
+        }
+        return true;
+    }
+
+    private void pushAnonymousClass(Method method) {
+        anonymousFlag = false;
+        if (method.getClassReturnType().isPresent()) {
+            Optional<Klass> anonymousClass = GoalVisitor.findClass(method.getClassReturnType().get().toString());
+            if (anonymousClass.isPresent()) {
+                anonymousClasses.push(anonymousClass.get());
+            } else {
+                // TODO provide error msg
+
+            }
+        } else {
+            // TODO provide error msg
         }
     }
 

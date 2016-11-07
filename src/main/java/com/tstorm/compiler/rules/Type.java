@@ -9,6 +9,7 @@ public enum Type {
     BOOLEAN ("boolean"),
     ARRAY ("int[]"),
     CLASS (""),
+    ANONYMOUS (""),
     BAD_TYPE ("");
 
     private String text;
