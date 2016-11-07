@@ -13,10 +13,7 @@ public class ParameterVisitor extends MiniJavaBaseVisitor<Variable> {
     @Override
     public Variable visitParameter(MiniJavaParser.ParameterContext ctx) {
         String type = ctx.type().t().getText();
-        Type t = Type.fromString(type);
-        if (t == Type.CLASS) {
-            return new Variable(t, type, ctx.parameterName().getText());
-        }
+        Type t = new Type(Type.Primitive.fromString(type));
         return new Variable(t, ctx.parameterName().getText());
     }
 

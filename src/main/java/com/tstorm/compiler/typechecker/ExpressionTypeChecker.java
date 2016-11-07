@@ -17,7 +17,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     private SymbolTable symbolTable;
     private Method currentMethod;
-    private Stack<Klass> anonymousClasses = new Stack<>();
+    private Stack<MethodCall> anonymousClasses = new Stack<>();
 
     public ExpressionTypeChecker(SymbolTable table) {
         this.symbolTable = table;
@@ -46,25 +46,25 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         switch (expr.getOperator()) {
             case "+":
             case "-":
-                if (left == Type.INT && right == Type.INT) {
-                    return Type.INT;
+                if (left.is(Type.Primitive.INT) && right.is(Type.Primitive.INT)) {
+                    return new Type(Type.Primitive.INT);
                 } else {
-                    return Type.BAD_TYPE;
+                    return new Type(Type.Primitive.BAD_TYPE);
                 }
             case "<":
-                if (left == Type.INT && right == Type.INT) {
-                    return Type.BOOLEAN;
+                if (left.is(Type.Primitive.INT) && right.is(Type.Primitive.INT)) {
+                    return new Type(Type.Primitive.BOOLEAN);
                 } else {
-                    return Type.BAD_TYPE;
+                    return new Type(Type.Primitive.BAD_TYPE);
                 }
             case "&&":
-                if (left == Type.BOOLEAN && right == Type.BOOLEAN) {
-                    return Type.BOOLEAN;
+                if (left.is(Type.Primitive.BOOLEAN) && right.is(Type.Primitive.BOOLEAN)) {
+                    return new Type(Type.Primitive.BOOLEAN);
                 } else {
-                    return Type.BAD_TYPE;
+                    return new Type(Type.Primitive.BAD_TYPE);
                 }
         }
-        return Type.BAD_TYPE;
+        return new Type(Type.Primitive.BAD_TYPE);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(DefaultExpression expr) {
         System.out.println("default expression");
-        return Type.ARRAY;
+        return new Type("array");
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             return t;
         }
         System.out.println();
-        return Type.BAD_TYPE;
+        return new Type(Type.Primitive.BAD_TYPE);
     }
 
     @Override
@@ -107,8 +107,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         return expr.getType();
     }
 
-    private boolean anonymousFlag = false;
-
     @Override
     public Type visit(MethodCall expr) {
         System.out.println("method call ");
@@ -116,32 +114,39 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             expr.addArgType(e.accept(this));
         }
         if (expr.getCaller() instanceof DefaultExpression) {
-            System.out.println("ANONYMOUS: " + expr.toString());
-            anonymousFlag = true;
             Type caller = expr.getCaller().accept(this);
-            if (!anonymousClasses.isEmpty()) {
-                confirmMethodExists(Optional.of(anonymousClasses.pop()), expr);
+            if (resolveAnonymousCall()) {
+                return caller;
+            } else {
+                return new Type(Type.Primitive.BAD_TYPE);
             }
-            // TODO introduce an anonymous return type as the caller
-            return caller;
         } else if (expr.getCaller() instanceof Identifier) {
             if (resolveMethodCall(expr)) {
-                return Type.CLASS;
+                return new Type("");
             } else {
-                anonymousFlag = false;
-                return Type.BAD_TYPE;
+                return new Type(Type.Primitive.BAD_TYPE);
             }
         } else {
             System.err.println("err");
-            return Type.BAD_TYPE;
+            return new Type(Type.Primitive.BAD_TYPE);
         }
+    }
+
+    private boolean resolveAnonymousCall() {
+        if (anonymousClasses.isEmpty()) {
+            return true;
+        } else {
+            MethodCall anonymousCall = anonymousClasses.pop();
+            Optional<Variable> v = currentMethod.findVariable(anonymousCall.getCaller().toString());
+        }
+        return false;
     }
 
     private boolean resolveMethodCall(MethodCall methodCall) {
         String callerId = methodCall.getCaller().toString();
         Optional<Variable> v = currentMethod.findVariable(callerId);
-        if (v.isPresent() && v.get().getClassType().isPresent()) {
-            return confirmMethodExists(GoalVisitor.findClass(v.get().getClassType().get()), methodCall);
+        if (v.isPresent() && v.get().getType().getClassName().isPresent()) {
+            return confirmMethodExists(GoalVisitor.findClass(v.get().getType().getClassName().get()), methodCall);
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
             return false;
@@ -173,25 +178,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return false;
             }
         }
-        if (anonymousFlag) {
-            pushAnonymousClass(method);
-        }
         return true;
-    }
-
-    private void pushAnonymousClass(Method method) {
-        anonymousFlag = false;
-        if (method.getClassReturnType().isPresent()) {
-            Optional<Klass> anonymousClass = GoalVisitor.findClass(method.getClassReturnType().get().toString());
-            if (anonymousClass.isPresent()) {
-                anonymousClasses.push(anonymousClass.get());
-            } else {
-                // TODO provide error msg
-
-            }
-        } else {
-            // TODO provide error msg
-        }
     }
 
     /**
@@ -203,7 +190,12 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(Expression expr) {
         System.out.println("...");
-        return expr.accept(this);
+        Type t = expr.accept(this);
+        if (expr instanceof MethodCall) {
+            System.out.println("pushing " + expr.toString());
+            anonymousClasses.push((MethodCall) expr);
+        }
+        return t;
     }
 
 }

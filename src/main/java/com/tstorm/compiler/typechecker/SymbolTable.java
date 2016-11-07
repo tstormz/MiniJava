@@ -21,8 +21,8 @@ public class SymbolTable {
         this.varIdentifierMap = k.getFields();
         this.methodIdentifierMap = k.getMethods();
         for (Variable v : k.getFieldSet().values()) {
-            if (v.getClassType().isPresent()) {
-                idToClassNameMap.put(v.getVariableName(), v.getClassType().get());
+            if (v.getType().getClassName().isPresent()) {
+                idToClassNameMap.put(v.getVariableName(), v.getType().getClassName().get());
             }
         }
     }

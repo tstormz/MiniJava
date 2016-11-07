@@ -27,9 +27,9 @@ public class Literal extends Expression {
         switch (value) {
             case "true":
             case "false":
-                return Type.BOOLEAN;
+                return new Type(Type.Primitive.BOOLEAN);
             default:
-                return Type.INT;
+                return new Type(Type.Primitive.INT);
         }
     }
 }

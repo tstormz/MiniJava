@@ -14,17 +14,9 @@ public class Method {
 
     private final String methodName;
     private final Type returnType;
-    private Optional<String> classReturnType;
     private final List<Variable> parameters;
     private final Map<String, Variable> locals;
     private List<Statement> body = new ArrayList<>();
-
-    public Method(String methodName, Type returnType, String classReturnType,
-                  List<Variable> params, Map<String, Variable> locals,
-                  List<Statement> body) {
-        this(methodName, returnType, params, locals, body);
-        this.classReturnType = Optional.of(classReturnType);
-    }
 
     public Method(String methodName, Type returnType, List<Variable> params,
                   Map<String, Variable> locals, List<Statement> body) {
@@ -33,7 +25,6 @@ public class Method {
         this.parameters = params;
         this.locals = locals;
         this.body = body;
-        this.classReturnType = Optional.empty();
     }
 
     public String getMethodName() {
@@ -46,10 +37,6 @@ public class Method {
 
     public Type getReturnType() {
         return returnType;
-    }
-
-    public Optional<String> getClassReturnType() {
-        return classReturnType;
     }
 
     public List<Variable> getParameters() {

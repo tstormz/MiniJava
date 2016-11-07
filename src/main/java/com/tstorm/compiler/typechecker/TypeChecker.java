@@ -28,7 +28,7 @@ public class TypeChecker extends Visitor {
         System.out.println("conditional");
         Type t = statement.getExpression().accept(expressionTypeChecker);
         System.out.println(t.toString());
-        if (t != Type.BOOLEAN) {
+        if (t.is(Type.Primitive.BOOLEAN)) {
             System.err.println("expected boolean expression");
         }
         statement.getIf().accept(this);
