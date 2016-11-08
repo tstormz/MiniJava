@@ -19,7 +19,13 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
 
     @Override
     public Method visitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-        Type returnType = new Type(Type.Primitive.fromString(ctx.returnType().getText()));
+        MiniJavaParser.TContext typeContext = ctx.returnType().type().t();
+        Type returnType;
+        if (typeContext.className() == null) {
+            returnType = new Type(Type.Primitive.fromString(ctx.returnType().getText()));
+        } else {
+            returnType = new Type(typeContext.className().getText());
+        }
         List<Variable> params = new ArrayList<>();
         for (MiniJavaParser.ParameterContext param : ctx.parameter()) {
             params.add(param.accept(new ParameterVisitor()));

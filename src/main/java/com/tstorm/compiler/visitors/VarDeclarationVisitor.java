@@ -13,7 +13,12 @@ public class VarDeclarationVisitor extends MiniJavaBaseVisitor<Variable> {
     @Override
     public Variable visitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx) {
         String type = ctx.type().t().getText();
-        Type t = new Type(Type.Primitive.fromString(type));
+        Type t;
+        if (ctx.type().t().className() == null) {
+            t = new Type(Type.Primitive.fromString(type));
+        } else {
+            t = new Type(ctx.type().t().className().getText());
+        }
         return new Variable(t, ctx.variableName().getText());
     }
 

@@ -115,45 +115,31 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         }
         if (expr.getCaller() instanceof DefaultExpression) {
             Type caller = expr.getCaller().accept(this);
-            if (resolveAnonymousCall()) {
-                return caller;
+            if (caller.getClassName().isPresent()) {
+                return confirmMethodExists(GoalVisitor.findClass(caller.getClassName().get()), expr);
             } else {
-                return new Type(Type.Primitive.BAD_TYPE);
+                return badType();
             }
         } else if (expr.getCaller() instanceof Identifier) {
-            if (resolveMethodCall(expr)) {
-                return new Type("");
-            } else {
-                return new Type(Type.Primitive.BAD_TYPE);
-            }
+            return resolveMethodCall(expr);
         } else {
             System.err.println("err");
-            return new Type(Type.Primitive.BAD_TYPE);
+            return badType();
         }
     }
 
-    private boolean resolveAnonymousCall() {
-        if (anonymousClasses.isEmpty()) {
-            return true;
-        } else {
-            MethodCall anonymousCall = anonymousClasses.pop();
-            Optional<Variable> v = currentMethod.findVariable(anonymousCall.getCaller().toString());
-        }
-        return false;
-    }
-
-    private boolean resolveMethodCall(MethodCall methodCall) {
+    private Type resolveMethodCall(MethodCall methodCall) {
         String callerId = methodCall.getCaller().toString();
         Optional<Variable> v = currentMethod.findVariable(callerId);
         if (v.isPresent() && v.get().getType().getClassName().isPresent()) {
             return confirmMethodExists(GoalVisitor.findClass(v.get().getType().getClassName().get()), methodCall);
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
-            return false;
+            return badType();
         }
     }
 
-    private boolean confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
+    private Type confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
         if (klass.isPresent()) {
             String methodId = methodCall.getMethodName();
             if (klass.get().hasMethod(methodId)) {
@@ -161,24 +147,28 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
             } else {
                 System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString());
-                return false;
+                return badType();
             }
         } else {
             System.err.println("class type not present for " + methodCall.getCaller().toString());
-            return false;
+            return badType();
         }
     }
 
-    private boolean verifyMethodSignature(Method method, MethodCall methodCall) {
+    private Type verifyMethodSignature(Method method, MethodCall methodCall) {
         for (int i = 0; i < methodCall.getArgsType().size(); i++) {
             Type param = method.getParameters().get(i).getType();
             Type arg = methodCall.getArgsType().get(i);
             if (param != arg) {
-                System.err.println("found argument of type " + arg + ", expecting " + param );
-                return false;
+                System.err.println("found argument of type " + arg + ", expecting " + param);
+                return badType();
             }
         }
-        return true;
+        return method.getReturnType();
+    }
+
+    private Type badType() {
+        return new Type(Type.Primitive.BAD_TYPE);
     }
 
     /**
@@ -190,12 +180,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(Expression expr) {
         System.out.println("...");
-        Type t = expr.accept(this);
-        if (expr instanceof MethodCall) {
-            System.out.println("pushing " + expr.toString());
-            anonymousClasses.push((MethodCall) expr);
-        }
-        return t;
+        return expr.accept(this);
     }
 
 }
