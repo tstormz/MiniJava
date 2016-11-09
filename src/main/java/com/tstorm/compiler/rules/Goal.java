@@ -17,7 +17,7 @@ public class Goal {
         this.classes = classes;
     }
 
-    public void parse() {
+    public void typeCheck() {
         for (Klass k : classes) {
             new TypeChecker(k);
         }

@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public class DefaultExpression extends Expression {
 
-    private Optional<Expression> expression;
+    private Optional<Expression> expression = Optional.empty();
 
     public DefaultExpression(){}
 

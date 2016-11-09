@@ -12,7 +12,7 @@ public class MainClassVisitor extends MiniJavaBaseVisitor<Klass> {
     @Override
     public Klass visitMainClass(MiniJavaParser.MainClassContext ctx) {
         String mainClassName = ctx.mainClassName().getText();
-        return new Klass(mainClassName);
+        return new Klass(mainClassName, null);
     }
 
 }

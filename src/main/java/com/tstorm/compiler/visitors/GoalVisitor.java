@@ -22,6 +22,7 @@ public class GoalVisitor extends MiniJavaBaseVisitor<Goal> {
         for (MiniJavaParser.ClassDeclarationContext klass : ctx.classDeclaration()) {
             classes.add(klass.accept(classDeclarationVisitor));
         }
+        linkClasses();
         return new Goal(mainClass, classes);
     }
 
@@ -32,6 +33,14 @@ public class GoalVisitor extends MiniJavaBaseVisitor<Goal> {
             }
         }
         return Optional.empty();
+    }
+
+    private void linkClasses() {
+        for (Klass k : classes) {
+            if (k.getParentName().isPresent()) {
+                k.setParent(GoalVisitor.findClass(k.getParentName().get()));
+            }
+        }
     }
 
 }

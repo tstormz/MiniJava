@@ -13,11 +13,13 @@ import java.util.Optional;
  */
 public class SymbolTable {
 
+    private final Klass klass;
     private final Map<String, Type> varIdentifierMap;
     private final Map<String, Type> methodIdentifierMap;
     private final Map<String, String> idToClassNameMap = new HashMap<>();
 
     public SymbolTable(Klass k) {
+        this.klass = k;
         this.varIdentifierMap = k.getFields();
         this.methodIdentifierMap = k.getMethods();
         for (Variable v : k.getFieldSet().values()) {
@@ -27,12 +29,12 @@ public class SymbolTable {
         }
     }
 
-    public Type getVarType(String symbol) {
-        return varIdentifierMap.get(symbol);
+    public Optional<Type> getVarType(String symbol) {
+        return Optional.ofNullable(varIdentifierMap.get(symbol));
     }
 
-    public Type getMethodType(String symbol) {
-        return methodIdentifierMap.get(symbol);
+    public Optional<Type> getMethodType(String symbol) {
+        return Optional.ofNullable(methodIdentifierMap.get(symbol));
     }
 
 }

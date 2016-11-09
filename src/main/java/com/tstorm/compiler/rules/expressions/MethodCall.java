@@ -42,22 +42,6 @@ public class MethodCall extends Expression {
         argsType.add(t);
     }
 
-    public String getCallerId(Expression e) {
-        if (e instanceof Identifier /*|| e instanceof Instance*/) {
-            return e.toString();
-        } else if (e instanceof MethodCall) {
-            return getCallerId(((MethodCall) e).caller);
-        } else if (e instanceof DefaultExpression) {
-            if (((DefaultExpression) e).getExpression().isPresent()) {
-                return getCallerId(((DefaultExpression) e).getExpression().get());
-            } else {
-               return "ERROR";
-            }
-        } else {
-            return "ERROR";
-        }
-    }
-
     public String toString() {
         String s = "";
         for (Expression arg : args) {

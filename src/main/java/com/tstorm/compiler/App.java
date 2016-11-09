@@ -15,20 +15,24 @@ import java.io.IOException;
  * Parse MiniJava grammar using antlr4
  */
 public class App {
+
     public static void main( String[] args ) throws IOException {
         MiniJavaLexer lexer = new MiniJavaLexer(new ANTLRFileStream(args[0]));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MiniJavaParser parser = new MiniJavaParser(tokens);
+        setErrorListeners(lexer, parser);
+        ParseTree tree = parser.goal();
+        Goal g = new GoalVisitor().visit(tree);
+//        g.print();
+        g.typeCheck();
+    }
 
+    private static void setErrorListeners(MiniJavaLexer lexer, MiniJavaParser parser) {
         lexer.removeErrorListeners();
         parser.removeErrorListeners();
 
         lexer.addErrorListener(MyErrorListener.INSTANCE);
         parser.addErrorListener(MyErrorListener.INSTANCE);
-
-        ParseTree tree = parser.goal();
-        Goal g = new GoalVisitor().visit(tree);
-//        g.print();
-        g.parse();
     }
+
 }

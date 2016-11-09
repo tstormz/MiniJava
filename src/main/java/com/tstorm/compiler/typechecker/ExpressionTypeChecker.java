@@ -8,7 +8,6 @@ import com.tstorm.compiler.rules.expressions.*;
 import com.tstorm.compiler.visitors.GoalVisitor;
 
 import java.util.Optional;
-import java.util.Stack;
 
 /**
  * Created by tstorm on 11/2/16.
@@ -16,16 +15,25 @@ import java.util.Stack;
 public class ExpressionTypeChecker extends ExpressionVisitor {
 
     private SymbolTable symbolTable;
+    private Klass currentKlass;
     private Method currentMethod;
-    private Stack<MethodCall> anonymousClasses = new Stack<>();
 
-    public ExpressionTypeChecker(SymbolTable table) {
+    public ExpressionTypeChecker(Klass k, SymbolTable table) {
+        this.currentKlass = k;
         this.symbolTable = table;
     }
 
     public void setCurrentMethod(Method m) {
         this.currentMethod = m;
     }
+
+    public Method getCurrentMethod() {
+        return currentMethod;
+    }
+
+    public Klass getCurrentKlass() {
+        return currentKlass;
+    };
 
     @Override
     public Type visit(ArrayLength expr) {
@@ -49,22 +57,22 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 if (left.is(Type.Primitive.INT) && right.is(Type.Primitive.INT)) {
                     return new Type(Type.Primitive.INT);
                 } else {
-                    return new Type(Type.Primitive.BAD_TYPE);
+                    return badType();
                 }
             case "<":
                 if (left.is(Type.Primitive.INT) && right.is(Type.Primitive.INT)) {
                     return new Type(Type.Primitive.BOOLEAN);
                 } else {
-                    return new Type(Type.Primitive.BAD_TYPE);
+                    return badType();
                 }
             case "&&":
                 if (left.is(Type.Primitive.BOOLEAN) && right.is(Type.Primitive.BOOLEAN)) {
                     return new Type(Type.Primitive.BOOLEAN);
                 } else {
-                    return new Type(Type.Primitive.BAD_TYPE);
+                    return badType();
                 }
         }
-        return new Type(Type.Primitive.BAD_TYPE);
+        return badType();
     }
 
     @Override
@@ -81,15 +89,15 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(Identifier expr) {
         System.out.print("identifier ");
-        Type t = symbolTable.getVarType(expr.toString());
-        if (t != null) {
+        Optional<Type> t = symbolTable.getVarType(expr.toString());
+        if (t.isPresent()) {
             System.out.println("variable");
-            return t;
+            return t.get();
         }
         t = symbolTable.getMethodType(expr.toString());
-        if (t != null) {
+        if (t.isPresent()) {
             System.out.println("method");
-            return t;
+            return t.get();
         }
         System.out.println();
         return new Type(Type.Primitive.BAD_TYPE);
@@ -103,13 +111,17 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(Literal expr) {
-        System.out.println("literal");
         return expr.getType();
     }
 
+    /**
+     * resolves each argument's type, and reduces an anonymous caller to it's return type
+     *
+     * @param expr a method call
+     * @return the return type of the method
+     */
     @Override
     public Type visit(MethodCall expr) {
-        System.out.println("method call ");
         for (Expression e : expr.getArgs()) {
             expr.addArgType(e.accept(this));
         }
@@ -128,23 +140,81 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         }
     }
 
+    /**
+     * looks for the caller in the locals, parameters, and fields of the current class
+     *
+     * @param methodCall the method call
+     * @return the return type of the method
+     */
     private Type resolveMethodCall(MethodCall methodCall) {
         String callerId = methodCall.getCaller().toString();
-        Optional<Variable> v = currentMethod.findVariable(callerId);
-        if (v.isPresent() && v.get().getType().getClassName().isPresent()) {
-            return confirmMethodExists(GoalVisitor.findClass(v.get().getType().getClassName().get()), methodCall);
+        Optional<Variable> local = currentMethod.findVariable(callerId);
+        if (local.isPresent()) {
+            return findClassOfCaller(local.get().getType().getClassName(), methodCall);
+        }
+        Optional<Type> field = symbolTable.getVarType(callerId);
+        if (field.isPresent()) {
+            return findClassOfCaller(field.get().getClassName(), methodCall);
+        }
+        Optional<String> inherited = findInheritedCaller(currentKlass.getParent(), callerId);
+        if (inherited.isPresent()) {
+            return findClassOfCaller(inherited, methodCall);
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
             return badType();
         }
     }
 
+    /**
+     * searches classes, and their super classes, for a caller
+     *
+     * @param k the class to look for the caller
+     * @param callerId the caller's identifer name
+     * @return the first class where a match was found
+     */
+    private Optional<String> findInheritedCaller(Optional<Klass> k, String callerId) {
+        if (k.isPresent()) {
+            if (k.get().hasField(callerId)) {
+                Variable caller = k.get().getFieldSet().get(callerId);
+                return caller.getType().getClassName();
+            } else {
+                return findInheritedCaller(k.get().getParent(), callerId);
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * if a caller is found, determine the class of the caller
+     *
+     * @param name       the name of the caller
+     * @param methodCall the method call
+     * @return the method's return type
+     */
+    private Type findClassOfCaller(Optional<String> name, MethodCall methodCall) {
+        if (name.isPresent()) {
+            return confirmMethodExists(GoalVisitor.findClass(name.get()), methodCall);
+        } else {
+            return badType();
+        }
+    }
+
+    /**
+     * looks for the method name in the class's method set, and recurses in
+     * parent's method set in the case that it isn't found
+     *
+     * @param klass      class type of the caller
+     * @param methodCall the method call
+     * @return the return type of the method
+     */
     private Type confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
         if (klass.isPresent()) {
             String methodId = methodCall.getMethodName();
             if (klass.get().hasMethod(methodId)) {
-                System.out.println("Found! " + methodId);
                 return verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
+            } else if (klass.get().hasParent()) {
+                return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
                 System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString());
                 return badType();
@@ -155,11 +225,18 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         }
     }
 
+    /**
+     * checks the type of each argument against the type specified in the method declaration
+     *
+     * @param method     the method being called
+     * @param methodCall the method call
+     * @return the return type of the method
+     */
     private Type verifyMethodSignature(Method method, MethodCall methodCall) {
         for (int i = 0; i < methodCall.getArgsType().size(); i++) {
             Type param = method.getParameters().get(i).getType();
             Type arg = methodCall.getArgsType().get(i);
-            if (param != arg) {
+            if (!param.equals(arg)) {
                 System.err.println("found argument of type " + arg + ", expecting " + param);
                 return badType();
             }
@@ -167,6 +244,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         return method.getReturnType();
     }
 
+    /**
+     * utility to return a bad type
+     *
+     * @return BAD_TYPE
+     */
     private Type badType() {
         return new Type(Type.Primitive.BAD_TYPE);
     }

@@ -61,6 +61,18 @@ public class Method {
         return null;
     }
 
+    public String printMethodSignature() {
+        String paramList = "";
+        for (Variable param : parameters) {
+            paramList += ", " + param.getType().toString();
+        }
+        if (parameters.size() > 0) {
+            return methodName + "(" + paramList.substring(2) + ")";
+        } else {
+            return methodName + "()";
+        }
+    }
+
     @Override
     public String toString() {
         String s = "   " + returnType + " " + methodName + "()";

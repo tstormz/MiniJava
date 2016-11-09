@@ -11,18 +11,36 @@ public class Klass {
     private final Map<String, Variable> fields = new HashMap<>();
     private final Map<String, Method> methods = new HashMap<>();
     private Optional<Klass> parent = Optional.empty();
+    private final Optional<String> parentName;
 
-    public Klass(String className, Klass parent) {
-        this(className);
-        this.parent = Optional.of(parent);
+    public Klass(String className, String parentName) {
+        this.className = className;
+        this.parentName = Optional.ofNullable(parentName);
     }
 
-    public Klass(String className) {
-        this.className = className;
+    public Optional<String> getParentName() {
+        return parentName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setParent(Optional<Klass> parent) {
+        this.parent = parent;
+    }
+
+    public Optional<Klass> getParent() {
+        return parent;
     }
 
     public void addField(Variable v) {
-        fields.put(v.getVariableName(), v);
+        if (fields.containsKey(v.getVariableName())) {
+            System.err.println(String.format("Variable '%s' is already defined in this scope",
+                    v.getVariableName()));
+        } else {
+            fields.put(v.getVariableName(), v);
+        }
     }
 
     public Map<String, Variable> getFieldSet() {
@@ -53,16 +71,16 @@ public class Klass {
         return methods;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public Optional<Klass> getParent() {
-        return parent;
-    }
-
     public boolean hasMethod(String methodId) {
         return methods.containsKey(methodId);
+    }
+
+    public boolean hasParent() {
+        return parent.isPresent();
+    }
+
+    public boolean hasField(String fieldId) {
+        return fields.containsKey(fieldId);
     }
 
     @Override

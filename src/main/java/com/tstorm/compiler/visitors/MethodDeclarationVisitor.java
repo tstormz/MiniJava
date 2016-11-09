@@ -17,6 +17,9 @@ import java.util.Map;
  */
 public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
 
+    private List<Variable> params;
+    private Map<String, Variable> locals;
+
     @Override
     public Method visitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
         MiniJavaParser.TContext typeContext = ctx.returnType().type().t();
@@ -26,13 +29,18 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
         } else {
             returnType = new Type(typeContext.className().getText());
         }
-        List<Variable> params = new ArrayList<>();
+        params = new ArrayList<>();
         for (MiniJavaParser.ParameterContext param : ctx.parameter()) {
             params.add(param.accept(new ParameterVisitor()));
         }
-        Map<String, Variable> locals = new HashMap<>();
+        locals = new HashMap<>();
         for (MiniJavaParser.VarDeclarationContext local : ctx.varDeclaration()) {
-            locals.put(local.variableName().getText(), local.accept(new VarDeclarationVisitor()));
+            Variable v = local.accept(new VarDeclarationVisitor());
+            if (variableNameIsUnique(v.getVariableName())) {
+                locals.put(local.variableName().getText(), v);
+            } else {
+                System.err.println(String.format("Variable '%s' is already defined in this scope", v.getVariableName()));
+            }
         }
         List<Statement> body = new ArrayList<>();
         for (MiniJavaParser.StatementContext statement : ctx.statement()) {
@@ -40,6 +48,15 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
         }
         body.add(ctx.returnStatement().accept(new ReturnStatementVisitor()));
         return new Method(ctx.methodName().getText(), returnType, params, locals, body);
+    }
+
+    private boolean variableNameIsUnique(String variableName) {
+        for (Variable v : params) {
+            if (v.getVariableName().equals(variableName)) {
+                return false;
+            }
+        }
+        return !locals.containsKey(variableName);
     }
 
 }

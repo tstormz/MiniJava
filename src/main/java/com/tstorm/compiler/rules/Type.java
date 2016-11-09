@@ -54,8 +54,28 @@ public class Type {
         }
     }
 
+    public Primitive getPrimitive() {
+        return primitiveType;
+    }
+
     public Optional<String> getClassName() {
         return Optional.ofNullable(classType);
+    }
+
+    public boolean equals(Type t) {
+        if (t.getClassName().isPresent()) {
+            if (classType != null) {
+                return t.getClassName().get().equals(classType);
+            } else {
+                return false;
+            }
+        } else {
+            if (primitiveType != null) {
+                return t.getPrimitive() == primitiveType;
+            } else {
+                return false;
+            }
+        }
     }
 
     public String toString() {

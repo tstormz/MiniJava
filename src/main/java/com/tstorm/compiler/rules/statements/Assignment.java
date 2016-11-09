@@ -8,12 +8,16 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public class Assignment extends Statement {
 
-    private String srcVariableName;
-    private Expression expression;
+    private final String srcVariableName;
+    private final Expression expression;
 
     public Assignment(String src, Expression expression) {
         this.srcVariableName = src;
         this.expression = expression;
+    }
+
+    public String getSrcVariableName() {
+        return srcVariableName;
     }
 
     public Expression getExpression() {
