@@ -9,7 +9,7 @@ public class Klass {
 
     private final String className;
     private final Map<String, Variable> fields = new HashMap<>();
-    private final Map<String, Method> methods = new HashMap<>();
+    private final Map<String, List<Method>> methods = new HashMap<>();
     private Optional<Klass> parent = Optional.empty();
     private final Optional<String> parentName;
 
@@ -56,17 +56,26 @@ public class Klass {
     }
 
     public void addMethod(Method m) {
-        methods.put(m.getMethodName(), m);
+        String methodName = m.getMethodName();
+        if (hasMethod(methodName)) {
+            List<Method> methodList = methods.get(methodName);
+            methodList.add(m);
+        } else {
+            List<Method> methodList = new LinkedList<>();
+            methodList.add(m);
+            methods.put(methodName, methodList);
+        }
     }
 
-    public Map<String, Method> getMethodSet() {
+    public Map<String, List<Method>> getMethodSet() {
         return methods;
     }
 
     public Map<String, Type> getMethods() {
         Map<String, Type> methods = new HashMap<>();
-        for (Method m : this.methods.values()) {
-            methods.put(m.getMethodName(), m.getReturnType());
+        // you can't over ride on the type so just take the first match
+        for (List<Method> m : this.methods.values()) {
+            methods.put(m.get(0).getMethodName(), m.get(0).getReturnType());
         }
         return methods;
     }

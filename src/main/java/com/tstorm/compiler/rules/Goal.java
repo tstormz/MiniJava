@@ -2,6 +2,7 @@ package com.tstorm.compiler.rules;
 
 import com.tstorm.compiler.typechecker.TypeChecker;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,8 +38,10 @@ public class Goal {
                 }
             }
             if (!klass.getMethods().isEmpty()) {
-                for (Method method : klass.getMethodSet().values()) {
-                    System.out.println(method.toString());
+                for (List<Method> methods : klass.getMethodSet().values()) {
+                    for (Method method : methods) {
+                        System.out.println(method.toString());
+                    }
                 }
             }
         }

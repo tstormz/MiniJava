@@ -7,6 +7,7 @@ import com.tstorm.compiler.rules.Method;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,19 +40,50 @@ public class ClassDeclarationVisitor extends MiniJavaBaseVisitor<Klass> {
         return klass;
     }
 
-    private boolean signatureIsUnique(Map<String, Method> definedMethods, Method newMethod) {
+    /**
+     * Checks if the method name is already declared, then checks the parameter list
+     *
+     * @param definedMethods list of all methods previously declared in this class
+     * @param newMethod the new method declaration
+     * @return true if the method signature is unique
+     */
+    private boolean signatureIsUnique(Map<String, List<Method>> definedMethods, Method newMethod) {
         if (definedMethods.containsKey(newMethod.getMethodName())) {
-            int paramIndex = 0;
-            boolean isUnique = false;
-            for (Variable v : definedMethods.get(newMethod.getMethodName()).getParameters()) {
-                Type t = newMethod.getParameters().get(paramIndex++).getType();
-                if (!v.getType().equals(t)) {
-                    isUnique = true;
-                }
+            boolean isUnique = true;
+            // for each method already defined using this name
+            for (Method m : definedMethods.get(newMethod.getMethodName())) {
+                // check that none have the same parameter types
+                isUnique &= compareParameters(m, newMethod, 0);
             }
-            return isUnique || (paramIndex != newMethod.getParameters().size());
+            return isUnique;
         } else {
+            // if the method name isn't previously declared
             return true;
+        }
+    }
+
+    /**
+     * Compares the type of each parameter for two given methods
+     *
+     * @param prevDefMethod the previously defined method
+     * @param newDefMethod the new method under inspection
+     * @param pc the parameter counter
+     * @return true if the two methods have different signatures, false otherwise
+     */
+    private boolean compareParameters(Method prevDefMethod, Method newDefMethod, int pc) {
+        // if we reached the end of the parameter list
+        if (prevDefMethod.getParameters().size() == pc) {
+            // return true if the new method has more parameters left
+            return newDefMethod.getParameters().size() > pc;
+        } else if(newDefMethod.getParameters().size() == pc) {
+            // and the other way around
+            return prevDefMethod.getParameters().size() > pc;
+        }
+        else {
+            Type prevDefParam = prevDefMethod.getParameters().get(pc).getType();
+            Type newDefParam = newDefMethod.getParameters().get(pc).getType();
+            // compare these params and recurse
+            return (!prevDefParam.equals(newDefParam)) || compareParameters(prevDefMethod, newDefMethod, pc + 1);
         }
     }
 

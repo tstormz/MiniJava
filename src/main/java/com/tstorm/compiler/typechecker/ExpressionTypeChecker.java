@@ -7,6 +7,7 @@ import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.rules.expressions.*;
 import com.tstorm.compiler.visitors.GoalVisitor;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,6 +49,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(ArrayRef expr) {
+        System.out.println("array ref");
         return null;
     }
 
@@ -130,7 +132,17 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (className.isPresent()) {
             return new Type(className.get());
         } else {
-            return badType();
+            Expression arrayIndex = expr.getArrayIndex();
+            if (arrayIndex != null) {
+                Type indexType = arrayIndex.accept(this);
+                if (indexType.is(Type.Primitive.INT)) {
+                    return new Type(Type.Primitive.ARRAY);
+                } else {
+                    return badType();
+                }
+            }else {
+                return badType();
+            }
         }
 
     }
@@ -240,12 +252,14 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     private Type confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
         if (klass.isPresent()) {
             String methodId = methodCall.getMethodName();
-            // need a list of all matching method names
+            // if the class has a method by this name, verify it's signature
             if (klass.get().hasMethod(methodId)) {
-            // then change this to a while loop
-                return verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
+                Type t = verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
+                if (!t.is(Type.Primitive.BAD_TYPE)) {
+                    return t;
+                }
             }
-            // then if this class doesn't return, and there is a parent, recurse
+            // if we have bad_type, recurse on the parent
             if (klass.get().hasParent()) {
                 return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
@@ -261,20 +275,37 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     /**
      * checks the type of each argument against the type specified in the method declaration
      *
-     * @param method     the method being called
+     * @param methods     the method being called
      * @param methodCall the method call
      * @return the return type of the method
      */
-    private Type verifyMethodSignature(Method method, MethodCall methodCall) {
-        for (int i = 0; i < methodCall.getArgsType().size(); i++) {
-            Type param = method.getParameters().get(i).getType();
-            Type arg = methodCall.getArgsType().get(i);
-            if (!param.equals(arg)) {
-                System.err.println("found argument of type " + arg + ", expecting " + param);
-                return badType();
+    private Type verifyMethodSignature(List<Method> methods, MethodCall methodCall) {
+        // argument count
+        final int argc = methodCall.getArgsType().size();
+        // for all methods that match the method name
+        boolean goodType = true;
+        for (Method method : methods) {
+            List<Variable> params = method.getParameters();
+            List<Type> args = methodCall.getArgsType();
+            // can only be a match if they have the same number of arguments as parameters
+            if (params.size() == args.size()) {
+                for (int i = 0; i < argc; i++) {
+                    Type param = params.get(i).getType();
+                    Type arg = args.get(i);
+//                    if (!param.equals(arg)) {
+//                        System.err.println("found argument of type " + arg + ", expecting " + param);
+//                        return badType();
+//                    }
+                    goodType &= param.equals(arg);
+                }
+            } else {
+                goodType = false;
+            }
+            if (goodType) {
+                return method.getReturnType();
             }
         }
-        return method.getReturnType();
+        return badType();
     }
 
     /**

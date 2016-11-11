@@ -11,7 +11,7 @@ import java.util.Optional;
 public class Instance extends Expression {
 
     private Expression arrayIndex;
-    private Optional<String> className;
+    private Optional<String> className = Optional.empty();
 
     public Instance(Expression expression) {
         this.arrayIndex = expression;
@@ -23,6 +23,10 @@ public class Instance extends Expression {
 
     public Optional<String> getClassName() {
         return className;
+    }
+
+    public Expression getArrayIndex() {
+        return arrayIndex;
     }
 
     @Override

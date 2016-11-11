@@ -6,6 +6,7 @@ import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.rules.statements.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,10 +20,12 @@ public class TypeChecker extends Visitor {
     public TypeChecker(Klass k) {
         symbolTable = new SymbolTable(k);
         expressionTypeChecker = new ExpressionTypeChecker(k, symbolTable);
-        for (Method m : k.getMethodSet().values()) {
-            expressionTypeChecker.setCurrentMethod(m);
-            for (Statement stat : m.getBody()) {
-                stat.accept(this);
+        for (List<Method> methods : k.getMethodSet().values()) {
+            for (Method m : methods) {
+                expressionTypeChecker.setCurrentMethod(m);
+                for (Statement stat : m.getBody()) {
+                    stat.accept(this);
+                }
             }
         }
     }
