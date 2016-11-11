@@ -298,6 +298,16 @@ public interface MiniJavaListener extends ParseTreeListener {
 	 */
 	void exitIdentifier(MiniJavaParser.IdentifierContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniJavaParser#thiz}.
+	 * @param ctx the parse tree
+	 */
+	void enterThiz(MiniJavaParser.ThizContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniJavaParser#thiz}.
+	 * @param ctx the parse tree
+	 */
+	void exitThiz(MiniJavaParser.ThizContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniJavaParser#intLit}.
 	 * @param ctx the parse tree
 	 */

@@ -48,8 +48,9 @@ expression : unwrapVariableName '!'
 	| '!' expression
 	| '(' expression ')'
 	;
-constant : 'true' | 'false' | 'null' | intLit | 'this' ;
-identifier : ID ;
+constant : 'true' | 'false' | 'null' | intLit ;
+identifier : ID | thiz ;
+thiz : 'this' ;
 intLit : INT ;
 INT : [0-9] [0-9]*;
 ID : [a-zA-Z] [a-zA-Z_$0-9]*;
