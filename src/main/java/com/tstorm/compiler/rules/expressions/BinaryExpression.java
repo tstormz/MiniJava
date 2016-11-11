@@ -8,8 +8,8 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
  */
 public class BinaryExpression extends Expression {
 
-    private Expression left, right;
-    private String op;
+    private final Expression left, right;
+    private final String op;
 
     public BinaryExpression(Expression left, String op, Expression right) {
         this.left = left;

@@ -14,9 +14,12 @@ public class Complement extends Expression {
         this.expression = expression;
     }
 
+    public Expression getExpression() {
+        return expression;
+    }
+
     @Override
     public Type accept(ExpressionVisitor v) {
-        v.visit(this);
-        return null;
+        return v.visit(this);
     }
 }

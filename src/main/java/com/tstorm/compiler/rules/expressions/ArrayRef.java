@@ -15,13 +15,20 @@ public class ArrayRef extends Expression {
         this.index = index;
     }
 
+    public Expression getArray() {
+        return array;
+    }
+
+    public Expression getIndex() {
+        return index;
+    }
+
     public String toString() {
         return array.toString() + "[" + index.toString() + "]";
     }
 
     @Override
     public Type accept(ExpressionVisitor v) {
-        v.visit(this);
-        return null;
+        return v.visit(this);
     }
 }

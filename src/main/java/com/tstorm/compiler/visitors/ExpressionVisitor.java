@@ -18,7 +18,7 @@ public class ExpressionVisitor extends MiniJavaBaseVisitor<Expression> {
         if (ctx.getChild(0).getClass() == MiniJavaParser.ExpressionContext.class) {
             String op = ctx.getChild(1).getText();
             // arithmetic expressions
-            if (op.matches("[+&-*<]")) {
+            if (op.matches("[+&*<\\-]")) {
                 MiniJavaParser.ExpressionContext left = ctx.expression(0);
                 MiniJavaParser.ExpressionContext right = ctx.expression(1);
                 return new BinaryExpression(left.accept(new ExpressionVisitor()), op, right.accept(new ExpressionVisitor()));

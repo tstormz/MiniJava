@@ -20,6 +20,18 @@ public class ElementAssignment extends Statement {
         assignment = expression[1];
     }
 
+    public String getDestination() {
+        return destVarName;
+    }
+
+    public Expression getIndex() {
+        return index;
+    }
+
+    public Expression getAssignment() {
+        return assignment;
+    }
+
     public String toString() {
         return destVarName + "[" + index.toString() + "] = " + assignment.toString();
     }

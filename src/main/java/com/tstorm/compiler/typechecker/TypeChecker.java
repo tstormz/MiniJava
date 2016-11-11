@@ -70,7 +70,7 @@ public class TypeChecker extends Visitor {
                         srcVar, inheritedField.get()));
             }
         } else {
-            System.out.println("cannot find type for " + statement.getSrcVariableName());
+            System.err.println("Assignment Error: cannot resolve type for " + statement.getSrcVariableName());
         }
     }
 
@@ -89,6 +89,13 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(ElementAssignment statement) {
         System.out.println("element assignemnt");
+        Type assignment = statement.getAssignment().accept(expressionTypeChecker);
+        Type index = statement.getIndex().accept(expressionTypeChecker);
+        if (!index.is(Type.Primitive.INT)) {
+            System.err.println(String.format("Assignment Error: Incompatible types, expected 'int' found '%s'", index.toString()));
+        } else if (!assignment.is(Type.Primitive.INT)) {
+            System.err.println(String.format("Assignment Error: Incompatible types, expected 'int' found '%s'", assignment.toString()));
+        }
     }
 
     @Override

@@ -14,13 +14,16 @@ public class ArrayLength extends Expression {
         this.array = array;
     }
 
+    public Expression getArray() {
+        return array;
+    }
+
     public String toString() {
         return array.toString() + ".length";
     }
 
     @Override
     public Type accept(ExpressionVisitor v) {
-        v.visit(this);
-        return null;
+        return v.visit(this);
     }
 }

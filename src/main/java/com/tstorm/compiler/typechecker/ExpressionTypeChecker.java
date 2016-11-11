@@ -37,7 +37,13 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(ArrayLength expr) {
-        return null;
+        Type typeOfCaller = expr.getArray().accept(this);
+        if (typeOfCaller.is(Type.Primitive.ARRAY)) {
+            return new Type(Type.Primitive.INT);
+        } else {
+            System.err.println("can't call length on a non-array");
+            return badType();
+        }
     }
 
     @Override
@@ -49,11 +55,10 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     public Type visit(BinaryExpression expr) {
         Type left = expr.getLeft().accept(this);
         Type right = expr.getRight().accept(this);
-        System.out.println("left: " + left);
-        System.out.println("right: " + right);
         switch (expr.getOperator()) {
             case "+":
             case "-":
+            case "*":
                 if (left.is(Type.Primitive.INT) && right.is(Type.Primitive.INT)) {
                     return new Type(Type.Primitive.INT);
                 } else {
@@ -71,33 +76,48 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 } else {
                     return badType();
                 }
+            default:
+                return badType();
         }
-        return badType();
     }
 
     @Override
     public Type visit(Complement expr) {
-        return null;
+        Type t = expr.getExpression().accept(this);
+        if (t.is(Type.Primitive.BOOLEAN)) {
+            return t;
+        } else {
+            System.err.println(String.format("Error: operator '!' cannot be applied to '%s'", t.toString()));
+            return badType();
+        }
     }
 
     @Override
     public Type visit(DefaultExpression expr) {
         System.out.println("default expression");
+        // TODO probably not return array
         return new Type("array");
     }
 
     @Override
     public Type visit(Identifier expr) {
         System.out.print("identifier ");
+        // fields
         Optional<Type> t = symbolTable.getVarType(expr.toString());
         if (t.isPresent()) {
             System.out.println("variable");
             return t.get();
         }
+        // methods
         t = symbolTable.getMethodType(expr.toString());
         if (t.isPresent()) {
             System.out.println("method");
             return t.get();
+        }
+        // locals and parameters
+        Optional<Variable> v = currentMethod.findVariable(expr.toString());
+        if (v.isPresent()) {
+            return v.get().getType();
         }
         System.out.println();
         return new Type(Type.Primitive.BAD_TYPE);
@@ -106,7 +126,13 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(Instance expr) {
         System.out.println("instance");
-        return null;
+        Optional<String> className = expr.getClassName();
+        if (className.isPresent()) {
+            return new Type(className.get());
+        } else {
+            return badType();
+        }
+
     }
 
     @Override
@@ -148,6 +174,9 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      */
     private Type resolveMethodCall(MethodCall methodCall) {
         String callerId = methodCall.getCaller().toString();
+        if (callerId.equals("this")) {
+            return confirmMethodExists(Optional.of(currentKlass), methodCall);
+        }
         Optional<Variable> local = currentMethod.findVariable(callerId);
         if (local.isPresent()) {
             return findClassOfCaller(local.get().getType().getClassName(), methodCall);
@@ -211,9 +240,13 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     private Type confirmMethodExists(Optional<Klass> klass, MethodCall methodCall) {
         if (klass.isPresent()) {
             String methodId = methodCall.getMethodName();
+            // need a list of all matching method names
             if (klass.get().hasMethod(methodId)) {
+            // then change this to a while loop
                 return verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
-            } else if (klass.get().hasParent()) {
+            }
+            // then if this class doesn't return, and there is a parent, recurse
+            if (klass.get().hasParent()) {
                 return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
                 System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString());

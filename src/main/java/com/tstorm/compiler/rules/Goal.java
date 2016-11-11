@@ -21,6 +21,7 @@ public class Goal {
         for (Klass k : classes) {
             new TypeChecker(k);
         }
+        new TypeChecker(mainClass);
     }
 
     public void print() {
