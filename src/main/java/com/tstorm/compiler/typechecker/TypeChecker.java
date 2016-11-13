@@ -4,6 +4,7 @@ import com.tstorm.compiler.rules.Klass;
 import com.tstorm.compiler.rules.Method;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
+import com.tstorm.compiler.rules.expressions.Expression;
 import com.tstorm.compiler.rules.statements.*;
 
 import java.util.List;
@@ -15,11 +16,11 @@ import java.util.Optional;
 public class TypeChecker extends Visitor {
 
     private ExpressionTypeChecker expressionTypeChecker;
-    private SymbolTable symbolTable;
+    private Klass currentKlass;
 
     public TypeChecker(Klass k) {
-        symbolTable = new SymbolTable(k);
-        expressionTypeChecker = new ExpressionTypeChecker(k, symbolTable);
+        this.currentKlass = k;
+        expressionTypeChecker = new ExpressionTypeChecker(k);
         for (List<Method> methods : k.getMethodSet().values()) {
             for (Method m : methods) {
                 expressionTypeChecker.setCurrentMethod(m);
@@ -44,49 +45,51 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(Assignment statement) {
         String srcVar = statement.getSrcVariableName();
-        // check fields
-        Optional<Type> typeOfVariable = symbolTable.getVarType(srcVar);
-        if (typeOfVariable.isPresent()) {
-            Type typeOfAssignment = statement.getExpression().accept(expressionTypeChecker);
-            if (!typeOfVariable.get().equals(typeOfAssignment)) {
-                System.err.println(String.format("Assignment Error: '%s' is expecting type %s",
-                        srcVar, typeOfVariable.get()));
+        // check local variables
+        Optional<Variable> local = expressionTypeChecker.getCurrentMethod().findVariable(srcVar);
+        if (local.isPresent()) {
+            if (checkType(local.get(), statement.getExpression(), srcVar)) {
+                local.get().initialize();
             }
             return;
         }
-        // check local variables
-        Optional<Variable> typeOfField = expressionTypeChecker.getCurrentMethod().findVariable(srcVar);
-        if (typeOfField.isPresent()) {
-            Type typeOfAssignment = statement.getExpression().accept(expressionTypeChecker);
-            if (!typeOfField.get().getType().equals(typeOfAssignment)) {
-                System.err.println(String.format("Assignment Error: '%s' is expecting type %s",
-                        srcVar, typeOfField.get()));
+        // check fields
+        Optional<Variable> field = currentKlass.getField(srcVar);
+        if (field.isPresent()) {
+            if (checkType(field.get(), statement.getExpression(), srcVar)) {
+                field.get().initialize();
             }
             return;
         }
         // check for inherited field
-        Optional<Type> inheritedField = findInheritedField(Optional.of(expressionTypeChecker.getCurrentKlass()), srcVar);
-        if (inheritedField.isPresent()) {
-            Type typeOfAssignment = statement.getExpression().accept(expressionTypeChecker);
-            if (!inheritedField.get().equals(typeOfAssignment)) {
-                System.err.println(String.format("Assignment Error: '%s' is expecting type %s",
-                        srcVar, inheritedField.get()));
+        Optional<Variable> inherited = findInheritedField(Optional.of(currentKlass), srcVar);
+        if (inherited.isPresent()) {
+            if (checkType(inherited.get(), statement.getExpression(), srcVar)) {
+                inherited.get().initialize();
             }
         } else {
             System.err.println("Assignment Error: cannot resolve type for " + statement.getSrcVariableName());
         }
     }
 
-    private Optional<Type> findInheritedField(Optional<Klass> klass, String srcVar) {
+    private Optional<Variable> findInheritedField(Optional<Klass> klass, String srcVar) {
         if (klass.isPresent()) {
             if (klass.get().hasField(srcVar)) {
-                return Optional.of(klass.get().getFields().get(srcVar));
+                return klass.get().getField(srcVar);
             } else {
                 return findInheritedField(klass.get().getParent(), srcVar);
             }
         } else {
             return Optional.empty();
         }
+    }
+
+    private boolean checkType(Variable variable, Expression assignment, String srcVar) {
+        if (!variable.getType().equals(assignment.accept(expressionTypeChecker))) {
+            System.err.println(String.format(Assignment.ERROR, srcVar, variable.getType()));
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -110,7 +113,7 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(ReturnStatement statement) {
         Type returnExpression = statement.getExpression().accept(expressionTypeChecker);
-        Type expectedReturnType  = expressionTypeChecker.getCurrentMethod().getReturnType();
+        Type expectedReturnType = expressionTypeChecker.getCurrentMethod().getReturnType();
         if (!returnExpression.equals(expectedReturnType)) {
             System.err.println(String.format("Return error: expecting '%s' but found '%s'",
                     expectedReturnType, returnExpression));

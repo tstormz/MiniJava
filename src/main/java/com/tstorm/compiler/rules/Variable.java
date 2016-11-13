@@ -7,8 +7,11 @@ import java.util.Optional;
  */
 public class Variable {
 
+    public static final String INIT_ERROR = "'%s' might not have been initialized";
+
     private final Type type;
     private final String variableName;
+    private boolean isInitialized = false;
 
     public Variable(Type type, String variableName) {
         this.variableName = variableName;
@@ -21,6 +24,14 @@ public class Variable {
 
     public Type getType() {
         return type;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public void initialize() {
+        isInitialized = true;
     }
 
     @Override

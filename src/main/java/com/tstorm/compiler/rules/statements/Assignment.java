@@ -8,6 +8,8 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public class Assignment extends Statement {
 
+    public static final String ERROR = "Assignment Error: '%s' is expecting type '%s'";
+
     private final String srcVariableName;
     private final Expression expression;
 

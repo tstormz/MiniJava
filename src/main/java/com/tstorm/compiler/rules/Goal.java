@@ -33,7 +33,7 @@ public class Goal {
                 System.out.println(" parent: " + klass.getParent().get().toString());
             }
             if (!klass.getFields().isEmpty()) {
-                for (Variable var : klass.getFieldSet().values()) {
+                for (Variable var : klass.getFields().values()) {
                     System.out.println(var.toString());
                 }
             }

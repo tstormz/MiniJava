@@ -15,13 +15,11 @@ import java.util.Optional;
  */
 public class ExpressionTypeChecker extends ExpressionVisitor {
 
-    private SymbolTable symbolTable;
-    private Klass currentKlass;
+    private final Klass klass;
     private Method currentMethod;
 
-    public ExpressionTypeChecker(Klass k, SymbolTable table) {
-        this.currentKlass = k;
-        this.symbolTable = table;
+    public ExpressionTypeChecker(Klass k) {
+        this.klass = k;
     }
 
     public void setCurrentMethod(Method m) {
@@ -31,10 +29,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     public Method getCurrentMethod() {
         return currentMethod;
     }
-
-    public Klass getCurrentKlass() {
-        return currentKlass;
-    };
 
     @Override
     public Type visit(ArrayLength expr) {
@@ -105,13 +99,13 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     public Type visit(Identifier expr) {
         System.out.print("identifier ");
         // fields
-        Optional<Type> t = symbolTable.getVarType(expr.toString());
+        Optional<Type> t = klass.getVarType(expr.toString());
         if (t.isPresent()) {
             System.out.println("variable");
             return t.get();
         }
         // methods
-        t = symbolTable.getMethodType(expr.toString());
+        t = klass.getMethodType(expr.toString());
         if (t.isPresent()) {
             System.out.println("method");
             return t.get();
@@ -122,7 +116,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             return v.get().getType();
         }
         System.out.println();
-        return new Type(Type.Primitive.BAD_TYPE);
+        return badType();
     }
 
     @Override
@@ -144,7 +138,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return badType();
             }
         }
-
     }
 
     @Override
@@ -187,19 +180,23 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     private Type resolveMethodCall(MethodCall methodCall) {
         String callerId = methodCall.getCaller().toString();
         if (callerId.equals("this")) {
-            return confirmMethodExists(Optional.of(currentKlass), methodCall);
+            return confirmMethodExists(Optional.of(klass), methodCall);
         }
         Optional<Variable> local = currentMethod.findVariable(callerId);
         if (local.isPresent()) {
-            return findClassOfCaller(local.get().getType().getClassName(), methodCall);
+            if (local.get().isInitialized()) {
+                return findClassOfCaller(local.get().getType().getClassName(), methodCall);
+            } else {
+                System.err.println(String.format(Variable.INIT_ERROR, local.get().getVariableName()));
+            }
         }
-        Optional<Type> field = symbolTable.getVarType(callerId);
+        Optional<Variable> field = klass.getField(callerId);
         if (field.isPresent()) {
-            return findClassOfCaller(field.get().getClassName(), methodCall);
+            return findClassOfCaller(field.get().getType().getClassName(), methodCall);
         }
-        Optional<String> inherited = findInheritedCaller(currentKlass.getParent(), callerId);
+        Optional<Variable> inherited = findInheritedCaller(klass.getParent(), callerId);
         if (inherited.isPresent()) {
-            return findClassOfCaller(inherited, methodCall);
+            return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
             return badType();
@@ -213,11 +210,10 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      * @param callerId the caller's identifer name
      * @return the first class where a match was found
      */
-    private Optional<String> findInheritedCaller(Optional<Klass> k, String callerId) {
+    private Optional<Variable> findInheritedCaller(Optional<Klass> k, String callerId) {
         if (k.isPresent()) {
             if (k.get().hasField(callerId)) {
-                Variable caller = k.get().getFieldSet().get(callerId);
-                return caller.getType().getClassName();
+                return k.get().getField(callerId);
             } else {
                 return findInheritedCaller(k.get().getParent(), callerId);
             }
@@ -292,10 +288,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 for (int i = 0; i < argc; i++) {
                     Type param = params.get(i).getType();
                     Type arg = args.get(i);
-//                    if (!param.equals(arg)) {
-//                        System.err.println("found argument of type " + arg + ", expecting " + param);
-//                        return badType();
-//                    }
                     goodType &= param.equals(arg);
                 }
             } else {

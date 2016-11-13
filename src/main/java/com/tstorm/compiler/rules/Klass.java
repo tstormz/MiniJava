@@ -43,16 +43,36 @@ public class Klass {
         }
     }
 
-    public Map<String, Variable> getFieldSet() {
+    public Map<String, Variable> getFields() {
         return fields;
     }
 
-    public Map<String, Type> getFields() {
+    public boolean hasField(String fieldId) {
+        return fields.containsKey(fieldId);
+    }
+
+    public Map<String, Type> getFieldTypes() {
         Map<String, Type> fields = new HashMap<>();
         for (Variable v : this.fields.values()) {
             fields.put(v.getVariableName(), v.getType());
         }
         return fields;
+    }
+
+    public Optional<Type> getVarType(String symbol) {
+        if (fields.containsKey(symbol)) {
+            return Optional.of(fields.get(symbol).getType());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Variable> getField(String id) {
+        if (fields.containsKey(id)) {
+            return Optional.of(fields.get(id));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void addMethod(Method m) {
@@ -73,11 +93,15 @@ public class Klass {
 
     public Map<String, Type> getMethods() {
         Map<String, Type> methods = new HashMap<>();
-        // you can't over ride on the type so just take the first match
+        // you can't override on the type so just take the first match
         for (List<Method> m : this.methods.values()) {
             methods.put(m.get(0).getMethodName(), m.get(0).getReturnType());
         }
         return methods;
+    }
+
+    public Optional<Type> getMethodType(String symbol) {
+        return Optional.ofNullable(getMethods().get(symbol));
     }
 
     public boolean hasMethod(String methodId) {
@@ -86,10 +110,6 @@ public class Klass {
 
     public boolean hasParent() {
         return parent.isPresent();
-    }
-
-    public boolean hasField(String fieldId) {
-        return fields.containsKey(fieldId);
     }
 
     @Override
