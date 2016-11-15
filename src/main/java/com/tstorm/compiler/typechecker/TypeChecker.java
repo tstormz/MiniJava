@@ -22,13 +22,95 @@ public class TypeChecker extends Visitor {
         this.currentKlass = k;
         expressionTypeChecker = new ExpressionTypeChecker(k);
         for (List<Method> methods : k.getMethodSet().values()) {
-            for (Method m : methods) {
-                expressionTypeChecker.setCurrentMethod(m);
-                for (Statement stat : m.getBody()) {
-                    stat.accept(this);
+            for (Method method : methods) {
+                expressionTypeChecker.setCurrentMethod(method);
+                readBody(method);
+            }
+        }
+    }
+
+    /**
+     * Type checks the body of the method, if the method signature has no conflict
+     * with any method declarations in it's super classes
+     *
+     * @param method the method under inspection
+     */
+    private void readBody(Method method) {
+        if (!hasReturnTypeClash(currentKlass.getParent(), method)) {
+            for (Statement stmt : method.getBody()) {
+                stmt.accept(this);
+            }
+        } else {
+            System.err.println("Return type clash");
+        }
+    }
+
+    /**
+     * Checks for a matching method name and parameter list, but conflicting return type
+     *
+     * @param klass the parent klass
+     * @param method the method under inspection
+     * @return true if there is a conflict on only the return type
+     */
+    private boolean hasReturnTypeClash(Optional<Klass> klass, Method method) {
+        if (klass.isPresent()) {
+            List<Method> methods = klass.get().getMethodSet().get(method.getMethodName());
+            boolean conflict = hasConflict(Optional.ofNullable(methods), method);
+            return conflict || hasReturnTypeClash(klass.get().getParent(), method);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper method to compare each method against previously defined methods
+     *
+     * @param methods the previously defined methods of the same name as method
+     * @param method the method under inspection
+     * @return true if there is a conflict
+     */
+    private boolean hasConflict(Optional<List<Method>> methods, Method method) {
+        if (methods.isPresent()) {
+            for (Method m : methods.get()) {
+                if (hasMatchingParams(method, m) && !hasMatchingReturnType(method, m)) {
+                    return true;
                 }
             }
         }
+        return false;
+    }
+
+    /**
+     * Compares the return type of two methods
+     *
+     * @param m1 the method being defined
+     * @param m2 the previously defined method
+     * @return true if the return types match
+     */
+    private boolean hasMatchingReturnType(Method m1, Method m2) {
+        return m1.getReturnType().equals(m2.getReturnType());
+    }
+
+    /**
+     * Compares the parameters one by one
+     *
+     * @param m1 the method being defined
+     * @param m2 the previously defined method
+     * @return true if each parameter has the same type
+     */
+    private boolean hasMatchingParams(Method m1, Method m2) {
+        if (m1.getParameters().size() == m2.getParameters().size()) {
+            for (int i = 0; i < m1.getParameters().size(); i++) {
+                Type t1 = m1.getParameters().get(i).getType();
+                Type t2 = m2.getParameters().get(i).getType();
+                if (!t1.equals(t2)) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -95,12 +177,45 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(ElementAssignment statement) {
         System.out.println("element assignemnt");
+        String arrayName = statement.getDestination();
         Type assignment = statement.getAssignment().accept(expressionTypeChecker);
         Type index = statement.getIndex().accept(expressionTypeChecker);
-        if (!index.is(Type.Primitive.INT)) {
-            System.err.println(String.format("Assignment Error: Incompatible types, expected 'int' found '%s'", index.toString()));
-        } else if (!assignment.is(Type.Primitive.INT)) {
-            System.err.println(String.format("Assignment Error: Incompatible types, expected 'int' found '%s'", assignment.toString()));
+        Optional<Variable> local = expressionTypeChecker.getCurrentMethod().findVariable(arrayName);
+        if (local.isPresent()) {
+            if (local.get().isInitialized()) {
+                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+            } else {
+                System.err.println("array not initialized");
+            }
+            return;
+        }
+        Optional<Variable> field = currentKlass.getField(arrayName);
+        if (field.isPresent()) {
+            if (field.get().isInitialized()) {
+                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+            } else {
+                System.err.println("array not initialized");
+            }
+            return;
+        }
+        Optional<Variable> inherited = findInheritedField(Optional.of(currentKlass), arrayName);
+        if (inherited.isPresent()) {
+            if (inherited.get().isInitialized()) {
+                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+            } else {
+                System.err.println("array not initialized");
+            }
+        } else {
+            System.err.println("cant find array");
+        }
+    }
+
+    private void requireInt(Type type, String errorMsg) {
+        if (!type.is(Type.Primitive.INT)) {
+            System.err.println(String.format(errorMsg, type.toString()));
         }
     }
 

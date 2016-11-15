@@ -33,4 +33,13 @@ public class Instance extends Expression {
     public Type accept(ExpressionVisitor v) {
         return v.visit(this);
     }
+
+    public String toString() {
+        if (className.isPresent()) {
+            return className.get();
+        } else {
+            return arrayIndex.toString();
+        }
+    }
+
 }

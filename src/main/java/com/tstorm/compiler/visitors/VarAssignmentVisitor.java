@@ -12,7 +12,6 @@ public class VarAssignmentVisitor extends MiniJavaBaseVisitor<Statement> {
 
     @Override
     public Statement visitVarAssignment(MiniJavaParser.VarAssignmentContext ctx) {
-        ctx.expression().accept(new ExpressionVisitor());
         return new Assignment(ctx.variableName().getText(), ctx.expression().accept(new ExpressionVisitor()));
     }
 

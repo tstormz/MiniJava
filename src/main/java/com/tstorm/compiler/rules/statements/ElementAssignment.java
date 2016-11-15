@@ -10,6 +10,8 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public class ElementAssignment extends Statement {
 
+    public static final String ASSIGN_ERROR = "Assignment Error: Incompatible types, expected 'int' found '%s'";
+
     private String destVarName;
     private Expression index, assignment;
 

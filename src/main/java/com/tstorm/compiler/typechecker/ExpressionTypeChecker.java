@@ -97,7 +97,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(Identifier expr) {
-        System.out.print("identifier ");
         // fields
         Optional<Type> t = klass.getVarType(expr.toString());
         if (t.isPresent()) {
@@ -121,7 +120,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(Instance expr) {
-        System.out.println("instance");
+        System.out.println("instance " + expr.toString());
         Optional<String> className = expr.getClassName();
         if (className.isPresent()) {
             return new Type(className.get());
@@ -192,11 +191,20 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         }
         Optional<Variable> field = klass.getField(callerId);
         if (field.isPresent()) {
-            return findClassOfCaller(field.get().getType().getClassName(), methodCall);
+            if (field.get().isInitialized()) {
+                return findClassOfCaller(field.get().getType().getClassName(), methodCall);
+            } else {
+                System.err.println(String.format(Variable.INIT_ERROR, field.get().getVariableName()));
+            }
         }
         Optional<Variable> inherited = findInheritedCaller(klass.getParent(), callerId);
         if (inherited.isPresent()) {
-            return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
+            if (inherited.get().isInitialized()) {
+                return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
+            } else {
+                System.err.println(String.format(Variable.INIT_ERROR, inherited.get().getVariableName()));
+                return badType();
+            }
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
             return badType();
@@ -317,7 +325,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      */
     @Override
     public Type visit(Expression expr) {
-        System.out.println("...");
+        System.out.print(".");
         return expr.accept(this);
     }
 

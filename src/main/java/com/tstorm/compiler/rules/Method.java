@@ -12,6 +12,8 @@ import java.util.Optional;
  */
 public class Method {
 
+    public static final String REDECLARED_VAR = "Variable '%s' is already defined in this scope";
+
     private final String methodName;
     private final Type returnType;
     private final List<Variable> parameters;

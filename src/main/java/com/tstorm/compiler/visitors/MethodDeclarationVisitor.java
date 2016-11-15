@@ -17,29 +17,21 @@ import java.util.Map;
  */
 public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
 
-    private List<Variable> params;
-    private Map<String, Variable> locals;
+    private final List<Variable> params = new ArrayList<>();
+    private final Map<String, Variable> locals = new HashMap<>();
 
     @Override
     public Method visitMethodDeclaration(MiniJavaParser.MethodDeclarationContext ctx) {
-        MiniJavaParser.TContext typeContext = ctx.returnType().type().t();
-        Type returnType;
-        if (typeContext.className() == null) {
-            returnType = new Type(Type.Primitive.fromString(ctx.returnType().getText()));
-        } else {
-            returnType = new Type(typeContext.className().getText());
-        }
-        params = new ArrayList<>();
+        Type returnType = getReturnType(ctx.returnType());
         for (MiniJavaParser.ParameterContext param : ctx.parameter()) {
             params.add(param.accept(new ParameterVisitor()));
         }
-        locals = new HashMap<>();
         for (MiniJavaParser.VarDeclarationContext local : ctx.varDeclaration()) {
             Variable v = local.accept(new VarDeclarationVisitor());
             if (variableNameIsUnique(v.getVariableName())) {
                 locals.put(local.variableName().getText(), v);
             } else {
-                System.err.println(String.format("Variable '%s' is already defined in this scope", v.getVariableName()));
+                System.err.println(String.format(Method.REDECLARED_VAR, v.getVariableName()));
             }
         }
         List<Statement> body = new ArrayList<>();
@@ -48,6 +40,15 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
         }
         body.add(ctx.returnStatement().accept(new ReturnStatementVisitor()));
         return new Method(ctx.methodName().getText(), returnType, params, locals, body);
+    }
+
+    private Type getReturnType(MiniJavaParser.ReturnTypeContext returnTypeContext) {
+        MiniJavaParser.TContext typeContext = returnTypeContext.type().t();
+        if (typeContext.className() == null) {
+            return new Type(Type.Primitive.fromString(returnTypeContext.getText()));
+        } else {
+            return new Type(typeContext.className().getText());
+        }
     }
 
     private boolean variableNameIsUnique(String variableName) {

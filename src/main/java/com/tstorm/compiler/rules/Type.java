@@ -23,7 +23,7 @@ public class Type {
         INT("int"),
         BOOLEAN("boolean"),
         ARRAY("int[]"),
-        BAD_TYPE("");
+        BAD_TYPE("bad type");
 
         private String text;
 

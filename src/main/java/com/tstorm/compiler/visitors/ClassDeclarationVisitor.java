@@ -5,11 +5,9 @@ import com.tstorm.compiler.minijava.MiniJavaParser;
 import com.tstorm.compiler.rules.Klass;
 import com.tstorm.compiler.rules.Method;
 import com.tstorm.compiler.rules.Type;
-import com.tstorm.compiler.rules.Variable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by tstorm on 10/29/16.
@@ -24,13 +22,11 @@ public class ClassDeclarationVisitor extends MiniJavaBaseVisitor<Klass> {
         } else {
             klass = new Klass(ctx.className().getText(), null);
         }
-        VarDeclarationVisitor varDeclarationVisitor = new VarDeclarationVisitor();
         for (MiniJavaParser.VarDeclarationContext var : ctx.varDeclaration()) {
-            klass.addField(var.accept(varDeclarationVisitor));
+            klass.addField(var.accept(new VarDeclarationVisitor()));
         }
-        MethodDeclarationVisitor methodDeclarationVisitor = new MethodDeclarationVisitor();
         for (MiniJavaParser.MethodDeclarationContext method : ctx.methodDeclaration()) {
-            Method m = method.accept(methodDeclarationVisitor);
+            Method m = method.accept(new MethodDeclarationVisitor());
             if (signatureIsUnique(klass.getMethodSet(), m)) {
                 klass.addMethod(m);
             } else {
