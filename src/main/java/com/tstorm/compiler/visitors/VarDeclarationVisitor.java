@@ -2,6 +2,7 @@ package com.tstorm.compiler.visitors;
 
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
+import com.tstorm.compiler.rules.OptionalType;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 
@@ -14,11 +15,20 @@ public class VarDeclarationVisitor extends MiniJavaBaseVisitor<Variable> {
     public Variable visitVarDeclaration(MiniJavaParser.VarDeclarationContext ctx) {
         String type = ctx.type().t().getText();
         Type t;
-        if (ctx.type().t().className() == null) {
-            t = new Type(Type.Primitive.fromString(type));
+        if (ctx.type().optional() != null) {
+            if (ctx.type().t().className() == null) {
+                t = new OptionalType(Type.Primitive.fromString(type));
+            } else {
+                t = new OptionalType(ctx.type().t().className().getText());
+            }
         } else {
-            t = new Type(ctx.type().t().className().getText());
+            if (ctx.type().t().className() == null) {
+                t = new Type(Type.Primitive.fromString(type));
+            } else {
+                t = new Type(ctx.type().t().className().getText());
+            }
         }
+
         return new Variable(t, ctx.variableName().getText());
     }
 

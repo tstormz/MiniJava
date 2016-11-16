@@ -1,11 +1,9 @@
 package com.tstorm.compiler.typechecker;
 
-import com.tstorm.compiler.rules.Klass;
-import com.tstorm.compiler.rules.Method;
-import com.tstorm.compiler.rules.Type;
-import com.tstorm.compiler.rules.Variable;
+import com.tstorm.compiler.rules.*;
 import com.tstorm.compiler.rules.expressions.Expression;
 import com.tstorm.compiler.rules.statements.*;
+import com.tstorm.compiler.visitors.GoalVisitor;
 
 import java.util.List;
 import java.util.Optional;
@@ -119,8 +117,9 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(Conditional statement) {
         Type t = statement.getExpression().accept(expressionTypeChecker);
-        if (!t.is(Type.Primitive.BOOLEAN)) {
+        if (!t.is(Type.Primitive.BOOLEAN) && !(t instanceof OptionalType)) {
             System.err.println("Error: conditional expression must be a boolean");
+            System.out.println(t.toString());
         }
         statement.getIf().accept(this);
         statement.getElse().accept(this);
@@ -132,24 +131,30 @@ public class TypeChecker extends Visitor {
         // check local variables
         Optional<Variable> local = expressionTypeChecker.getCurrentMethod().findVariable(srcVar);
         if (local.isPresent()) {
-            if (checkType(local.get(), statement.getExpression(), srcVar)) {
+            if (checkType(local.get(), statement.getExpression())) {
                 local.get().initialize();
+            } else {
+                System.err.println(String.format(Assignment.ERROR, srcVar, local.get().getType()));
             }
             return;
         }
         // check fields
         Optional<Variable> field = currentKlass.getField(srcVar);
         if (field.isPresent()) {
-            if (checkType(field.get(), statement.getExpression(), srcVar)) {
+            if (checkType(field.get(), statement.getExpression())) {
                 field.get().initialize();
+            } else {
+                System.err.println(String.format(Assignment.ERROR, srcVar, field.get().getType()));
             }
             return;
         }
         // check for inherited field
         Optional<Variable> inherited = findInheritedField(Optional.of(currentKlass), srcVar);
         if (inherited.isPresent()) {
-            if (checkType(inherited.get(), statement.getExpression(), srcVar)) {
+            if (checkType(inherited.get(), statement.getExpression())) {
                 inherited.get().initialize();
+            } else {
+                System.err.println(String.format(Assignment.ERROR, srcVar, inherited.get().getType()));
             }
         } else {
             System.err.println("Assignment Error: cannot resolve type for " + statement.getSrcVariableName());
@@ -168,12 +173,34 @@ public class TypeChecker extends Visitor {
         }
     }
 
-    private boolean checkType(Variable variable, Expression assignment, String srcVar) {
-        if (!variable.getType().equals(assignment.accept(expressionTypeChecker))) {
-            System.err.println(String.format(Assignment.ERROR, srcVar, variable.getType()));
+    private boolean checkType(Variable variable, Expression assignment) {
+        Type assignType = assignment.accept(expressionTypeChecker);
+        if (variable.getType().equals(assignType)) {
+            return true;
+        } else if(assignType.getClassName().isPresent()) {
+            Optional<Klass> k = GoalVisitor.findClass(assignType.getClassName().get());
+            if (k.isPresent() && k.get().hasParent()) {
+                return checkSuperClasses(variable, k.get().getParent());
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
-        return true;
+    }
+
+    private boolean checkSuperClasses(Variable variable, Optional<Klass> klass) {
+        if (klass.isPresent()) {
+            if (variable.getType().equals(new Type(klass.get().getClassName()))) {
+                return true;
+            } else if (klass.get().hasParent()) {
+                return checkSuperClasses(variable, klass.get().getParent());
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override

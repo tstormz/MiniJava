@@ -65,6 +65,11 @@ public class ExpressionVisitor extends MiniJavaBaseVisitor<Expression> {
         if (ctx.identifier() != null) {
             return new Identifier(ctx.getText());
         }
+        // Unwrapped Optional
+        if (ctx.unwrapVariableName() != null) {
+            String id = ctx.getText();
+            return new UnwrappedIdentifier(id.substring(0, id.length() - 1));
+        }
         // Literal
         if (ctx.constant() != null) {
             return new Literal(ctx.getText());

@@ -1,9 +1,6 @@
 package com.tstorm.compiler.typechecker;
 
-import com.tstorm.compiler.rules.Klass;
-import com.tstorm.compiler.rules.Method;
-import com.tstorm.compiler.rules.Type;
-import com.tstorm.compiler.rules.Variable;
+import com.tstorm.compiler.rules.*;
 import com.tstorm.compiler.rules.expressions.*;
 import com.tstorm.compiler.visitors.GoalVisitor;
 
@@ -177,32 +174,59 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             return confirmMethodExists(Optional.of(klass), methodCall);
         }
         Optional<Variable> local = currentMethod.findVariable(callerId);
+        // TODO initialize variable when assigned to an initialized variable
         if (local.isPresent()) {
-            if (local.get().isInitialized()) {
-                return findClassOfCaller(local.get().getType().getClassName(), methodCall);
+            if (local.get().getType() instanceof OptionalType
+                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
+                System.err.println("Error: using optional value without unwrapping it's value");
+                return badType();
             } else {
-                System.err.println(String.format(Variable.INIT_ERROR, local.get().getVariableName()));
+                if (local.get().isInitialized()) {
+                    return findClassOfCaller(local.get().getType().getClassName(), methodCall);
+                } else {
+                    System.err.println(String.format(Variable.INIT_ERROR, local.get().getVariableName()));
+                }
             }
         }
         Optional<Variable> field = klass.getField(callerId);
         if (field.isPresent()) {
-            if (field.get().isInitialized()) {
-                return findClassOfCaller(field.get().getType().getClassName(), methodCall);
+            if (field.get().getType() instanceof OptionalType
+                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
+                System.err.println("Error: using optional value without unwrapping it's value");
+                return badType();
             } else {
-                System.err.println(String.format(Variable.INIT_ERROR, field.get().getVariableName()));
+                if (field.get().isInitialized()) {
+                    return findClassOfCaller(field.get().getType().getClassName(), methodCall);
+                } else {
+                    System.err.println(String.format(Variable.INIT_ERROR, field.get().getVariableName()));
+                }
             }
         }
         Optional<Variable> inherited = findInheritedCaller(klass.getParent(), callerId);
         if (inherited.isPresent()) {
-            if (inherited.get().isInitialized()) {
-                return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
-            } else {
-                System.err.println(String.format(Variable.INIT_ERROR, inherited.get().getVariableName()));
+            if (inherited.get().getType() instanceof OptionalType
+                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
+                System.err.println("Error: using optional value without unwrapping it's value");
                 return badType();
+            } else {
+                if (inherited.get().isInitialized()) {
+                    return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
+                } else {
+                    System.err.println(String.format(Variable.INIT_ERROR, inherited.get().getVariableName()));
+                    return badType();
+                }
             }
         } else {
             System.err.println("could not resolve id " + callerId + " or of primitive type");
             return badType();
+        }
+    }
+
+    private boolean valueIsPresent(Variable variable, Identifier caller) {
+        if (variable.getType() instanceof OptionalType) {
+            return caller instanceof UnwrappedIdentifier;
+        } else {
+            return variable.isInitialized();
         }
     }
 
