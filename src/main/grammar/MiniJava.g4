@@ -15,12 +15,13 @@ methodName : ID ;
 parameterName : ID ;
 returnType : type ;
 returnStatement : 'return' expression ';' '}' ;
-type: t ('?')? ;
+type: t (optional)? ;
 t : 'int' '[' ']' 
 	| 'boolean'
 	| 'int'
 	| className
 	;
+optional : '?' ;
 statement : conditional
 	| loop
 	| print
