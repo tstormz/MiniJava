@@ -36,6 +36,9 @@ public class TypeChecker extends Visitor {
      * @param method the method under inspection
      */
     private void readBody(Method method) {
+        for (Variable param : method.getParameters()) {
+            param.initialize();
+        }
         if (!hasReturnTypeClash(currentKlass.getParent(), method)) {
             for (Statement stmt : method.getBody()) {
                 stmt.accept(this);
@@ -116,7 +119,6 @@ public class TypeChecker extends Visitor {
     @Override
     public void visit(Conditional statement) {
         Type t = statement.getExpression().accept(expressionTypeChecker);
-        System.out.println(t.toString());
         if (!t.is(Type.Primitive.BOOLEAN)) {
             System.err.println("Error: conditional expression must be a boolean");
         }
@@ -176,7 +178,6 @@ public class TypeChecker extends Visitor {
 
     @Override
     public void visit(ElementAssignment statement) {
-        System.out.println("element assignemnt");
         String arrayName = statement.getDestination();
         Type assignment = statement.getAssignment().accept(expressionTypeChecker);
         Type index = statement.getIndex().accept(expressionTypeChecker);

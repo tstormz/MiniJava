@@ -62,6 +62,8 @@ public class Klass {
     public Optional<Type> getVarType(String symbol) {
         if (fields.containsKey(symbol)) {
             return Optional.of(fields.get(symbol).getType());
+        } else if (symbol.equals("this")) {
+            return Optional.of(new Type(this.className));
         } else {
             return Optional.empty();
         }

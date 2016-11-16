@@ -43,8 +43,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(ArrayRef expr) {
-        System.out.println("array ref");
-        return null;
+        return new Type(Type.Primitive.INT);
     }
 
     @Override
@@ -100,13 +99,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         // fields
         Optional<Type> t = klass.getVarType(expr.toString());
         if (t.isPresent()) {
-            System.out.println("variable");
             return t.get();
         }
         // methods
         t = klass.getMethodType(expr.toString());
         if (t.isPresent()) {
-            System.out.println("method");
             return t.get();
         }
         // locals and parameters
@@ -114,13 +111,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (v.isPresent()) {
             return v.get().getType();
         }
-        System.out.println();
         return badType();
     }
 
     @Override
     public Type visit(Instance expr) {
-        System.out.println("instance " + expr.toString());
         Optional<String> className = expr.getClassName();
         if (className.isPresent()) {
             return new Type(className.get());
@@ -325,7 +320,6 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      */
     @Override
     public Type visit(Expression expr) {
-        System.out.print(".");
         return expr.accept(this);
     }
 
