@@ -262,7 +262,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (klass.get().hasParent()) {
                 return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
-                System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString());
+                System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString() + " on line " + methodCall.lineNumber);
                 return badType();
             }
         } else {
@@ -291,7 +291,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 for (int i = 0; i < argc; i++) {
                     Type param = params.get(i).getType();
                     Type arg = args.get(i);
-                    goodType &= param.equals(arg);
+                    goodType &= typesMatch(param, arg);
                 }
             } else {
                 goodType = false;
@@ -301,6 +301,28 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             }
         }
         return badType();
+    }
+
+    /**
+     * Checks if the type of the parameter is equal to the type of the argument, or any of the
+     * argument's super classes
+     *
+     * @param param the type of the parameter
+     * @param arg the type of the argument
+     * @return true if the type of param equals the type of arg or the type of any of arg's parent classes
+     */
+    private boolean typesMatch(Type param, Type arg) {
+        Optional<Klass> argKlass = Optional.empty();
+        if (arg.getClassName().isPresent()) {
+            argKlass = GoalVisitor.findClass(arg.getClassName().get());
+        }
+        if (param.equals(arg)) {
+            return true;
+        } else if (argKlass.isPresent() && argKlass.get().hasParent()) {
+            return typesMatch(param, new Type(argKlass.get().getParentName().get()));
+        } else {
+            return false;
+        }
     }
 
     /**

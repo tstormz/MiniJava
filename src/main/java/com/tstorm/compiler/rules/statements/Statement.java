@@ -7,6 +7,16 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public abstract class Statement {
 
+    private int lineNumber = 1;
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int i) {
+        lineNumber = i;
+    }
+
     public abstract void accept(Visitor v);
 
 }

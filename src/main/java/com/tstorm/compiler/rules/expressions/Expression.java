@@ -8,6 +8,8 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
  */
 public abstract class Expression {
 
+    public int lineNumber = 1;
+
     public abstract Type accept(ExpressionVisitor v);
 
 }

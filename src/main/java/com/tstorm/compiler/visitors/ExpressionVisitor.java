@@ -41,7 +41,9 @@ public class ExpressionVisitor extends MiniJavaBaseVisitor<Expression> {
                     for (int i = 1; i < ctx.expression().size(); i++) {
                         args.add(ctx.expression(i).accept(new ExpressionVisitor()));
                     }
-                    return new MethodCall(caller, ctx.methodName().getText(), args);
+                    MethodCall methodCall = new MethodCall(caller, ctx.methodName().getText(), args);
+                    methodCall.lineNumber = ctx.start.getLine();
+                    return methodCall;
                 }
             }
         }
