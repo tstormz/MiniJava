@@ -8,6 +8,7 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public class ReturnStatement extends Statement {
 
+    public static final String ERROR = "Return error: expecting '%s' but found '%s'";
     private final Expression expression;
 
     public ReturnStatement(Expression expression) {

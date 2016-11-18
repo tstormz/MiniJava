@@ -106,9 +106,33 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         // locals and parameters
         Optional<Variable> v = currentMethod.findVariable(expr.toString());
         if (v.isPresent()) {
-            return v.get().getType();
+            Type type = v.get().getType();
+            if (type instanceof OptionalType) {
+                return tryUnwrapping(expr, type);
+            } else if (expr instanceof UnwrappedIdentifier) {
+                System.err.println("can't use ! on non-optional datatype");
+                return badType();
+            } else {
+                return type;
+            }
         }
         return badType();
+    }
+
+    private Type tryUnwrapping(Identifier id, Type type) {
+        if (id instanceof UnwrappedIdentifier) {
+            return unwrap(type);
+        } else {
+            return type;
+        }
+    }
+
+    private Type unwrap(Type type) {
+        if (type.getClassName().isPresent()) {
+            return new Type(type.getClassName().get());
+        } else {
+            return new Type(type.getPrimitive());
+        }
     }
 
     @Override
@@ -125,7 +149,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 } else {
                     return badType();
                 }
-            }else {
+            } else {
                 return badType();
             }
         }
@@ -233,7 +257,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     /**
      * searches classes, and their super classes, for a caller
      *
-     * @param k the class to look for the caller
+     * @param k        the class to look for the caller
      * @param callerId the caller's identifer name
      * @return the first class where a match was found
      */
@@ -298,7 +322,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     /**
      * checks the type of each argument against the type specified in the method declaration
      *
-     * @param methods     the method being called
+     * @param methods    the method being called
      * @param methodCall the method call
      * @return the return type of the method
      */
@@ -332,7 +356,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      * argument's super classes
      *
      * @param param the type of the parameter
-     * @param arg the type of the argument
+     * @param arg   the type of the argument
      * @return true if the type of param equals the type of arg or the type of any of arg's parent classes
      */
     private boolean typesMatch(Type param, Type arg) {

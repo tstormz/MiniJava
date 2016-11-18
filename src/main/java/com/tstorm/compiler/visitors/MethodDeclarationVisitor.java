@@ -3,6 +3,7 @@ package com.tstorm.compiler.visitors;
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
 import com.tstorm.compiler.rules.Method;
+import com.tstorm.compiler.rules.OptionalType;
 import com.tstorm.compiler.rules.statements.Statement;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
@@ -43,11 +44,19 @@ public class MethodDeclarationVisitor extends MiniJavaBaseVisitor<Method> {
     }
 
     private Type getReturnType(MiniJavaParser.ReturnTypeContext returnTypeContext) {
-        MiniJavaParser.TContext typeContext = returnTypeContext.type().t();
-        if (typeContext.className() == null) {
-            return new Type(Type.Primitive.fromString(returnTypeContext.getText()));
+        MiniJavaParser.TypeContext typeContext = returnTypeContext.type();
+        if (typeContext.t().className() == null) {
+            Type.Primitive type;
+            if (typeContext.optional() == null) {
+                type = Type.Primitive.fromString(returnTypeContext.getText());
+            } else {
+                String typeStr = returnTypeContext.getText();
+                type = Type.Primitive.fromString(typeStr.substring(0, typeStr.length() - 1));
+            }
+            return (typeContext.optional() == null) ? new Type(type) : new OptionalType(type);
         } else {
-            return new Type(typeContext.className().getText());
+            String type = typeContext.t().className().getText();
+            return (typeContext.optional() == null) ? new Type(type) : new OptionalType(type);
         }
     }
 

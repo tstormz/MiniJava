@@ -175,7 +175,10 @@ public class TypeChecker extends Visitor {
 
     private boolean checkType(Variable variable, Expression assignment) {
         Type assignType = assignment.accept(expressionTypeChecker);
-        if (variable.getType().equals(assignType)) {
+        if(assignType instanceof OptionalType && !(variable.getType() instanceof OptionalType)) {
+            System.err.println(String.format(Assignment.ERROR, variable.getVariableName(), variable.getType().toString()));
+            return false;
+        } else if (variable.getType().equals(assignType)) {
             return true;
         } else if(assignType.getClassName().isPresent()) {
             Optional<Klass> k = GoalVisitor.findClass(assignType.getClassName().get());
@@ -257,9 +260,24 @@ public class TypeChecker extends Visitor {
     public void visit(ReturnStatement statement) {
         Type returnExpression = statement.getExpression().accept(expressionTypeChecker);
         Type expectedReturnType = expressionTypeChecker.getCurrentMethod().getReturnType();
+        if (returnExpression instanceof OptionalType) {
+            returnExpression = unwrap((OptionalType) returnExpression);
+            if (expectedReturnType instanceof OptionalType) {
+                expectedReturnType = unwrap((OptionalType) expectedReturnType);
+            } else {
+                System.err.println("can't return an optional type when expecting a non-optional");
+            }
+        }
         if (!returnExpression.equals(expectedReturnType)) {
-            System.err.println(String.format("Return error: expecting '%s' but found '%s'",
-                    expectedReturnType, returnExpression));
+            System.err.println(String.format(ReturnStatement.ERROR, expectedReturnType, returnExpression));
+        }
+    }
+
+    private Type unwrap(OptionalType optionalType) {
+        if (optionalType.getClassName().isPresent()) {
+            return new Type(optionalType.getClassName().get());
+        } else {
+            return new Type(optionalType.getPrimitive());
         }
     }
 
