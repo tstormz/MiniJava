@@ -8,6 +8,7 @@ import com.tstorm.compiler.typechecker.Visitor;
  */
 public class Conditional extends Statement {
 
+    public static final String ERROR = "Error: conditional expression must be a boolean";
     private final Expression expression;
     private final Statement ifStatement;
     private final Statement elseStatement;

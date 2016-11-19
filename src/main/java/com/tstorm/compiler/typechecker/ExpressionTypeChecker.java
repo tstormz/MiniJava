@@ -87,22 +87,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
     @Override
     public Type visit(DefaultExpression expr) {
         System.out.println("default expression");
-        // TODO probably not return array
-        return new Type("array");
+        return null;
     }
 
     @Override
     public Type visit(Identifier expr) {
-        // fields
-        Optional<Type> t = klass.getVarType(expr.toString());
-        if (t.isPresent()) {
-            return t.get();
-        }
-        // methods
-        t = klass.getMethodType(expr.toString());
-        if (t.isPresent()) {
-            return t.get();
-        }
         // locals and parameters
         Optional<Variable> v = currentMethod.findVariable(expr.toString());
         if (v.isPresent()) {
@@ -110,12 +99,31 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (type instanceof OptionalType) {
                 return tryUnwrapping(expr, type);
             } else if (expr instanceof UnwrappedIdentifier) {
-                System.err.println("can't use ! on non-optional datatype");
+                System.err.println(OptionalType.UNWRAP_ERROR);
                 return badType();
             } else {
                 return type;
             }
         }
+        // fields
+        Optional<Variable> t = klass.getField(expr.toString());
+        if (t.isPresent()) {
+            Type type = t.get().getType();
+            if (type instanceof OptionalType) {
+                return tryUnwrapping(expr, type);
+            } else if (expr instanceof UnwrappedIdentifier) {
+                System.err.println(OptionalType.UNWRAP_ERROR);
+            } else {
+                return type;
+            }
+            return t.get().getType();
+        }
+        // methods
+        Optional<Type> methodType = klass.getMethodType(expr.toString());
+        if (methodType.isPresent()) {
+            return methodType.get();
+        }
+        // other
         return badType();
     }
 
@@ -198,11 +206,10 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             return confirmMethodExists(Optional.of(klass), methodCall);
         }
         Optional<Variable> local = currentMethod.findVariable(callerId);
-        // TODO initialize variable when assigned to an initialized variable
         if (local.isPresent()) {
             if (local.get().getType() instanceof OptionalType
                     && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println("Error: using optional value without unwrapping it's value");
+                System.err.println(OptionalType.USE_ERROR);
                 return badType();
             } else {
                 if (local.get().isInitialized()) {
@@ -216,7 +223,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (field.isPresent()) {
             if (field.get().getType() instanceof OptionalType
                     && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println("Error: using optional value without unwrapping it's value");
+                System.err.println(OptionalType.USE_ERROR);
                 return badType();
             } else {
                 if (field.get().isInitialized()) {
@@ -230,7 +237,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (inherited.isPresent()) {
             if (inherited.get().getType() instanceof OptionalType
                     && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println("Error: using optional value without unwrapping it's value");
+                System.err.println(OptionalType.USE_ERROR);
                 return badType();
             } else {
                 if (inherited.get().isInitialized()) {
@@ -241,7 +248,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 }
             }
         } else {
-            System.err.println("could not resolve id " + callerId + " or of primitive type");
+            System.err.println(String.format(Type.NOT_FOUND_ERROR, callerId));
             return badType();
         }
     }
@@ -310,11 +317,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (klass.get().hasParent()) {
                 return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
-                System.err.println("no " + methodId + " method found for " + methodCall.getCaller().toString() + " on line " + methodCall.lineNumber);
+                System.err.println(String.format(Method.NOT_FOUND_ERROR, methodId, methodCall.getCaller().toString(), methodCall.lineNumber));
                 return badType();
             }
         } else {
-            System.err.println("class type not present for " + methodCall.getCaller().toString());
+            System.err.println(String.format(Klass.NOT_FOUND_ERROR, methodCall.getCaller().toString()));
             return badType();
         }
     }

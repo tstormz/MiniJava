@@ -1,13 +1,12 @@
 package com.tstorm.compiler.rules;
 
-import java.util.Optional;
-
 /**
  * Created by tstorm on 10/29/16.
  */
 public class Variable {
 
     public static final String INIT_ERROR = "'%s' might not have been initialized";
+    public static final String ASSIGN_ERROR = "Assignment Error: cannot resolve type for %s";
 
     private final Type type;
     private final String variableName;

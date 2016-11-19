@@ -7,6 +7,8 @@ import java.util.Optional;
  */
 public class Type {
 
+    public static final String NOT_FOUND_ERROR = "could not resolve id %s or of primitive type";
+
     private Primitive primitiveType;
     private String classType;
 

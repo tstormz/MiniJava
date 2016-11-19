@@ -13,6 +13,7 @@ import java.util.Optional;
 public class Method {
 
     public static final String REDECLARED_VAR = "Variable '%s' is already defined in this scope";
+    public static final String NOT_FOUND_ERROR = "no %s method found for %s on line %d";
 
     private final String methodName;
     private final Type returnType;

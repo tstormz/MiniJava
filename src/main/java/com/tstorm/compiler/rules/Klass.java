@@ -7,6 +7,7 @@ import java.util.*;
  */
 public class Klass {
 
+    public static final String NOT_FOUND_ERROR = "class type not present for %s";
     private final String className;
     private final Map<String, Variable> fields = new HashMap<>();
     private final Map<String, List<Method>> methods = new HashMap<>();

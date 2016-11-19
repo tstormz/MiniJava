@@ -42,7 +42,7 @@ public class TypeChecker extends Visitor {
                 stmt.accept(this);
             }
         } else {
-            System.err.println("Return type clash");
+            System.err.println("Return type clashes with another signature");
         }
     }
 
@@ -118,7 +118,7 @@ public class TypeChecker extends Visitor {
     public void visit(Conditional statement) {
         Type t = statement.getExpression().accept(expressionTypeChecker);
         if (!t.is(Type.Primitive.BOOLEAN) && !(t instanceof OptionalType)) {
-            System.err.println("Error: conditional expression must be a boolean");
+            System.err.println(Conditional.ERROR);
             System.out.println(t.toString());
         }
         statement.getIf().accept(this);
@@ -157,7 +157,7 @@ public class TypeChecker extends Visitor {
                 System.err.println(String.format(Assignment.ERROR, srcVar, inherited.get().getType()));
             }
         } else {
-            System.err.println("Assignment Error: cannot resolve type for " + statement.getSrcVariableName());
+            System.err.println(String.format(Variable.ASSIGN_ERROR, statement.getSrcVariableName()));
         }
     }
 
