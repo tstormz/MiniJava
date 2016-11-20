@@ -7,11 +7,11 @@ import com.tstorm.compiler.rules.statements.*;
  */
 public abstract class Visitor {
 
-    public abstract void visit(Conditional statement);
-    public abstract void visit(Assignment statement);
-    public abstract void visit(ElementAssignment statement);
-    public abstract void visit(Loop statement);
-    public abstract void visit(ReturnStatement statement);
-    public abstract void visit(DefaultStatement statement);
+    public abstract boolean visit(Conditional statement);
+    public abstract boolean visit(Assignment statement);
+    public abstract boolean visit(ElementAssignment statement);
+    public abstract boolean visit(Loop statement);
+    public abstract boolean visit(ReturnStatement statement);
+    public abstract boolean visit(DefaultStatement statement);
 
 }

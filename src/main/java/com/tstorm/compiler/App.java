@@ -23,7 +23,9 @@ public class App {
         setErrorListeners(lexer, parser);
         ParseTree tree = parser.goal();
         Goal program = new GoalVisitor().visit(tree);
-        program.typeCheck();
+        if (program.typeCheck()) {
+            System.out.println("pass");
+        }
     }
 
     private static void setErrorListeners(MiniJavaLexer lexer, MiniJavaParser parser) {

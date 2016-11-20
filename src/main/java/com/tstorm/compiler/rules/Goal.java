@@ -18,11 +18,16 @@ public class Goal {
         this.classes = classes;
     }
 
-    public void typeCheck() {
+    public boolean typeCheck() {
+        TypeChecker typeChecker;
+        boolean pass = true;
         for (Klass k : classes) {
-            new TypeChecker(k);
+            typeChecker = new TypeChecker(k);
+            pass &= typeChecker.checkType();
         }
-        new TypeChecker(mainClass);
+        typeChecker = new TypeChecker(mainClass);
+        pass &= typeChecker.checkType();
+        return pass;
     }
 
     public void print() {

@@ -29,7 +29,7 @@ public class Loop extends Statement {
     }
 
     @Override
-    public void accept(Visitor v) {
-        v.visit(this);
+    public boolean accept(Visitor v) {
+        return v.visit(this);
     }
 }

@@ -19,12 +19,17 @@ public class TypeChecker extends Visitor {
     public TypeChecker(Klass k) {
         this.currentKlass = k;
         expressionTypeChecker = new ExpressionTypeChecker(k);
-        for (List<Method> methods : k.getMethodSet().values()) {
+    }
+
+    public boolean checkType() {
+        boolean pass = true;
+        for (List<Method> methods : currentKlass.getMethodSet().values()) {
             for (Method method : methods) {
                 expressionTypeChecker.setCurrentMethod(method);
-                readBody(method);
+                pass &= readBody(method);
             }
         }
+        return pass;
     }
 
     /**
@@ -32,17 +37,21 @@ public class TypeChecker extends Visitor {
      * with any method declarations in it's super classes
      *
      * @param method the method under inspection
+     * @return true if there are no type errors
      */
-    private void readBody(Method method) {
+    private boolean readBody(Method method) {
         for (Variable param : method.getParameters()) {
             param.initialize();
         }
         if (!hasReturnTypeClash(currentKlass.getParent(), method)) {
+            boolean valid = true;
             for (Statement stmt : method.getBody()) {
-                stmt.accept(this);
+                valid &= stmt.accept(this);
             }
+            return valid;
         } else {
             System.err.println("Return type clashes with another signature");
+            return false;
         }
     }
 
@@ -115,49 +124,55 @@ public class TypeChecker extends Visitor {
     }
 
     @Override
-    public void visit(Conditional statement) {
+    public boolean visit(Conditional statement) {
         Type t = statement.getExpression().accept(expressionTypeChecker);
         if (!t.is(Type.Primitive.BOOLEAN) && !(t instanceof OptionalType)) {
             System.err.println(Conditional.ERROR);
             System.out.println(t.toString());
         }
-        statement.getIf().accept(this);
-        statement.getElse().accept(this);
+        boolean ifExpr = statement.getIf().accept(this);
+        boolean elseExpr = statement.getElse().accept(this);
+        return ifExpr && elseExpr;
     }
 
     @Override
-    public void visit(Assignment statement) {
+    public boolean visit(Assignment statement) {
         String srcVar = statement.getSrcVariableName();
         // check local variables
         Optional<Variable> local = expressionTypeChecker.getCurrentMethod().findVariable(srcVar);
         if (local.isPresent()) {
             if (checkType(local.get(), statement.getExpression())) {
                 local.get().initialize();
+                return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, local.get().getType()));
+                return false;
             }
-            return;
         }
         // check fields
         Optional<Variable> field = currentKlass.getField(srcVar);
         if (field.isPresent()) {
             if (checkType(field.get(), statement.getExpression())) {
                 field.get().initialize();
+                return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, field.get().getType()));
+                return false;
             }
-            return;
         }
         // check for inherited field
         Optional<Variable> inherited = findInheritedField(Optional.of(currentKlass), srcVar);
         if (inherited.isPresent()) {
             if (checkType(inherited.get(), statement.getExpression())) {
                 inherited.get().initialize();
+                return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, inherited.get().getType()));
+                return false;
             }
         } else {
             System.err.println(String.format(Variable.ASSIGN_ERROR, statement.getSrcVariableName()));
+            return false;
         }
     }
 
@@ -207,57 +222,65 @@ public class TypeChecker extends Visitor {
     }
 
     @Override
-    public void visit(ElementAssignment statement) {
+    public boolean visit(ElementAssignment statement) {
         String arrayName = statement.getDestination();
         Type assignment = statement.getAssignment().accept(expressionTypeChecker);
         Type index = statement.getIndex().accept(expressionTypeChecker);
         Optional<Variable> local = expressionTypeChecker.getCurrentMethod().findVariable(arrayName);
         if (local.isPresent()) {
             if (local.get().isInitialized()) {
-                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
-                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");
+                return false;
             }
-            return;
         }
         Optional<Variable> field = currentKlass.getField(arrayName);
         if (field.isPresent()) {
             if (field.get().isInitialized()) {
-                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
-                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");
+                return false;
             }
-            return;
         }
         Optional<Variable> inherited = findInheritedField(Optional.of(currentKlass), arrayName);
         if (inherited.isPresent()) {
             if (inherited.get().isInitialized()) {
-                requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
-                requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
+                boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");
+                return false;
             }
         } else {
             System.err.println("cant find array");
+            return false;
         }
     }
 
-    private void requireInt(Type type, String errorMsg) {
+    private boolean requireInt(Type type, String errorMsg) {
         if (!type.is(Type.Primitive.INT)) {
             System.err.println(String.format(errorMsg, type.toString()));
+            return false;
         }
+        return true;
     }
 
     @Override
-    public void visit(Loop statement) {
-        statement.getExpression().accept(expressionTypeChecker);
-        statement.getStatement().accept(this);
+    public boolean visit(Loop statement) {
+        Type expression = statement.getExpression().accept(expressionTypeChecker);
+        boolean statementCheck = statement.getStatement().accept(this);
+        return statementCheck && !expression.is(Type.Primitive.BAD_TYPE);
     }
 
     @Override
-    public void visit(ReturnStatement statement) {
+    public boolean visit(ReturnStatement statement) {
         Type returnExpression = statement.getExpression().accept(expressionTypeChecker);
         Type expectedReturnType = expressionTypeChecker.getCurrentMethod().getReturnType();
         if (returnExpression instanceof OptionalType) {
@@ -266,10 +289,14 @@ public class TypeChecker extends Visitor {
                 expectedReturnType = unwrap((OptionalType) expectedReturnType);
             } else {
                 System.err.println("can't return an optional type when expecting a non-optional");
+                return false;
             }
         }
         if (!returnExpression.equals(expectedReturnType)) {
             System.err.println(String.format(ReturnStatement.ERROR, expectedReturnType, returnExpression));
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -282,10 +309,12 @@ public class TypeChecker extends Visitor {
     }
 
     @Override
-    public void visit(DefaultStatement statement) {
+    public boolean visit(DefaultStatement statement) {
+        boolean typeCheck = true;
         for (Statement s : statement.getNestedStatements()) {
-            s.accept(this);
+            typeCheck &= s.accept(this);
         }
+        return typeCheck;
     }
 
 }
