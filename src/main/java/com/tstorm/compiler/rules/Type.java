@@ -20,6 +20,10 @@ public class Type {
         this.classType = className;
     }
 
+    public Type() {
+        this.classType = "void";
+    }
+
     public enum Primitive {
 
         INT("int"),
