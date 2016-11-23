@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class ArrayRef extends Expression {
+public class ArrayRef implements Expression {
 
     private Expression array, index;
 

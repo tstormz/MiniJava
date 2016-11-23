@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class Complement extends Expression {
+public class Complement implements Expression {
 
     private final Expression expression;
 

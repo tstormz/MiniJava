@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Created by tstorm on 11/1/16.
  */
-public class DefaultExpression extends Expression {
+public class DefaultExpression implements Expression {
 
     private Optional<Expression> expression = Optional.empty();
 

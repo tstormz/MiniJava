@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.Visitor;
 /**
  * Created by tstorm on 10/31/16.
  */
-public class Loop extends Statement {
+public class Loop implements Statement {
 
     private final Expression expression;
     private final Statement statement;

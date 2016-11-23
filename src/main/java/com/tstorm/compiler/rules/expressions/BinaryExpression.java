@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
 /**
  * Created by tstorm on 11/1/16.
  */
-public class BinaryExpression extends Expression {
+public class BinaryExpression implements Expression {
 
     private final Expression left, right;
     private final String op;

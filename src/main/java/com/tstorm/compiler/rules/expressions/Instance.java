@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class Instance extends Expression {
+public class Instance implements Expression {
 
     private Expression arrayIndex;
     private Optional<String> className = Optional.empty();

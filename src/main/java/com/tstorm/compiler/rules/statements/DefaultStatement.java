@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class DefaultStatement extends Statement {
+public class DefaultStatement implements Statement {
 
     private final List<Statement> nestedStatements = new ArrayList<>();
 

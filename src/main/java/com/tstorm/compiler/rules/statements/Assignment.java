@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.Visitor;
 /**
  * Created by tstorm on 11/1/16.
  */
-public class Assignment extends Statement {
+public class Assignment implements Statement {
 
     public static final String ERROR = "Assignment Error: '%s' is expecting type '%s'";
 

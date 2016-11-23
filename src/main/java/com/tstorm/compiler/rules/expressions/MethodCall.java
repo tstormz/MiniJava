@@ -9,12 +9,13 @@ import java.util.List;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class MethodCall extends Expression {
+public class MethodCall implements Expression {
 
     private final Expression caller;
     private final String methodName;
     private final List<Expression> args;
     private final List<Type> argsType = new ArrayList<>();
+    private int lineNumber;
 
     public MethodCall(Expression caller, String methodName, List<Expression> args) {
         this.caller = caller;
@@ -40,6 +41,14 @@ public class MethodCall extends Expression {
 
     public void addArgType(Type t) {
         argsType.add(t);
+    }
+
+    public void setLineNumber(int line) {
+        lineNumber = line;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
     }
 
     public String toString() {

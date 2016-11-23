@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.Visitor;
 /**
  * Created by tstorm on 10/31/16.
  */
-public class Conditional extends Statement {
+public class Conditional implements Statement {
 
     public static final String ERROR = "Error: conditional expression must be a boolean";
     private final Expression expression;

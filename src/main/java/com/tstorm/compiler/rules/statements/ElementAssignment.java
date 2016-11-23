@@ -8,7 +8,7 @@ import com.tstorm.compiler.typechecker.Visitor;
 /**
  * Created by tstorm on 11/1/16.
  */
-public class ElementAssignment extends Statement {
+public class ElementAssignment implements Statement {
 
     public static final String ASSIGN_ERROR = "Assignment Error: Incompatible types, expected 'int' found '%s'";
 

@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.Visitor;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class ReturnStatement extends Statement {
+public class ReturnStatement implements Statement {
 
     public static final String ERROR = "Return error: expecting '%s' but found '%s'";
     private final Expression expression;

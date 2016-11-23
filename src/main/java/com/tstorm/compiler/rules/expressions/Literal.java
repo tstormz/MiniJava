@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
 /**
  * Created by tstorm on 11/1/16.
  */
-public class Literal extends Expression {
+public class Literal implements Expression {
 
     private String value;
 

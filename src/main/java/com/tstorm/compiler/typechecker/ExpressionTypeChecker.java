@@ -317,7 +317,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (klass.get().hasParent()) {
                 return confirmMethodExists(klass.get().getParent(), methodCall);
             } else {
-                System.err.println(String.format(Method.NOT_FOUND_ERROR, methodId, methodCall.getCaller().toString(), methodCall.lineNumber));
+                System.err.println(String.format(Method.NOT_FOUND_ERROR, methodId, methodCall.getCaller().toString(), methodCall.getLineNumber()));
                 return badType();
             }
         } else {

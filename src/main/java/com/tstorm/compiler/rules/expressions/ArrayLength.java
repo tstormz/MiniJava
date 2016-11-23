@@ -6,7 +6,7 @@ import com.tstorm.compiler.typechecker.ExpressionVisitor;
 /**
  * Created by tstorm on 11/2/16.
  */
-public class ArrayLength extends Expression {
+public class ArrayLength implements Expression {
 
     private Expression array;
 

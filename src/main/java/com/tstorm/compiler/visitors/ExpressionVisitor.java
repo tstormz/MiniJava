@@ -42,7 +42,7 @@ public class ExpressionVisitor extends MiniJavaBaseVisitor<Expression> {
                         args.add(ctx.expression(i).accept(new ExpressionVisitor()));
                     }
                     MethodCall methodCall = new MethodCall(caller, ctx.methodName().getText(), args);
-                    methodCall.lineNumber = ctx.start.getLine();
+                    methodCall.setLineNumber(ctx.start.getLine());
                     return methodCall;
                 }
             }
