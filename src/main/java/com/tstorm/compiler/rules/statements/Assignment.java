@@ -1,12 +1,15 @@
 package com.tstorm.compiler.rules.statements;
 
+import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.rules.expressions.Expression;
 import com.tstorm.compiler.typechecker.Visitor;
+
+import java.io.PrintWriter;
 
 /**
  * Created by tstorm on 11/1/16.
  */
-public class Assignment implements Statement {
+public class Assignment extends Assembler implements Statement {
 
     public static final String ERROR = "Assignment Error: '%s' is expecting type '%s'";
 
@@ -33,5 +36,10 @@ public class Assignment implements Statement {
     @Override
     public boolean accept(Visitor v) {
         return v.visit(this);
+    }
+
+    @Override
+    public void generateCode(PrintWriter out) {
+        out.println("bar");
     }
 }

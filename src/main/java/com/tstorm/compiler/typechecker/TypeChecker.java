@@ -317,4 +317,10 @@ public class TypeChecker extends Visitor {
         return typeCheck;
     }
 
+    @Override
+    public boolean visit(Print statement) {
+        statement.getExpression().accept(expressionTypeChecker);
+        return true;
+    }
+
 }

@@ -13,5 +13,6 @@ public abstract class Visitor {
     public abstract boolean visit(Loop statement);
     public abstract boolean visit(ReturnStatement statement);
     public abstract boolean visit(DefaultStatement statement);
+    public abstract boolean visit(Print statement);
 
 }
