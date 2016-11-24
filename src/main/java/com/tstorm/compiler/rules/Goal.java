@@ -2,6 +2,7 @@ package com.tstorm.compiler.rules;
 
 import com.tstorm.compiler.typechecker.TypeChecker;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,10 @@ public class Goal {
         typeChecker = new TypeChecker(mainClass);
         pass &= typeChecker.checkType();
         return pass;
+    }
+
+    public void generateCode() throws IOException {
+        mainClass.generateCode(true);
     }
 
     public void print() {

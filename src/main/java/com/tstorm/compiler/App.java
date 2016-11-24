@@ -24,7 +24,7 @@ public class App {
         ParseTree tree = parser.goal();
         Goal program = new GoalVisitor().visit(tree);
         if (program.typeCheck()) {
-            System.out.println("pass");
+            program.generateCode();
         }
     }
 

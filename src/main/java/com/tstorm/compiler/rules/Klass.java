@@ -1,5 +1,6 @@
 package com.tstorm.compiler.rules;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -118,6 +119,23 @@ public class Klass {
     @Override
     public String toString() {
         return className;
+    }
+
+    public void generateCode(boolean isMain) throws IOException {
+        File classFile = new File(className + ".j");
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(classFile)));
+        declareClass(out);
+        if (isMain) {
+            out.println(".method public static main([Ljava/lang/String;)V");
+            methods.get("main").get(0).generateBody(out);
+            out.println(".end method");
+        }
+        out.close();
+    }
+
+    private void declareClass(PrintWriter out) {
+        out.println(".class public " + className);
+        out.println(".super java/lang/Object");
     }
 
 }

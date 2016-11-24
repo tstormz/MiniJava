@@ -1,7 +1,9 @@
 package com.tstorm.compiler.rules;
 
+import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.rules.statements.Statement;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,15 @@ public class Method {
         }
     }
 
+    public void generateBody(PrintWriter out) {
+        out.println("foo");
+        for (Statement stmt : body) {
+            if (stmt instanceof Assembler) {
+                ((Assembler) stmt).generateCode(out);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         String s = "   " + returnType + " " + methodName + "()";
@@ -92,5 +103,4 @@ public class Method {
         }
         return s;
     }
-
 }
