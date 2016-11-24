@@ -2,10 +2,7 @@ package com.tstorm.compiler.visitors;
 
 import com.tstorm.compiler.minijava.MiniJavaBaseVisitor;
 import com.tstorm.compiler.minijava.MiniJavaParser;
-import com.tstorm.compiler.rules.statements.Conditional;
-import com.tstorm.compiler.rules.statements.DefaultStatement;
-import com.tstorm.compiler.rules.statements.Loop;
-import com.tstorm.compiler.rules.statements.Statement;
+import com.tstorm.compiler.rules.statements.*;
 
 import java.util.List;
 
@@ -36,7 +33,8 @@ public class StatementVisitor extends MiniJavaBaseVisitor<Statement> {
         }
         MiniJavaParser.PrintContext printContext = ctx.print();
         if (printContext != null) {
-//            System.out.println();
+            Print print = printContext.accept(new PrintVisitor());
+            return print;
         }
         return new DefaultStatement(ctx.statement());
     }
