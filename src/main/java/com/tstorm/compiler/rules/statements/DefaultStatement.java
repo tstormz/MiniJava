@@ -1,16 +1,18 @@
 package com.tstorm.compiler.rules.statements;
 
+import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.minijava.MiniJavaParser;
 import com.tstorm.compiler.typechecker.Visitor;
 import com.tstorm.compiler.visitors.StatementVisitor;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by tstorm on 11/2/16.
  */
-public class DefaultStatement implements Statement {
+public class DefaultStatement extends Assembler implements Statement {
 
     private final List<Statement> nestedStatements = new ArrayList<>();
 
@@ -35,5 +37,12 @@ public class DefaultStatement implements Statement {
     @Override
     public boolean accept(Visitor v) {
         return v.visit(this);
+    }
+
+    @Override
+    public void generateCode(PrintWriter out) {
+        for (Statement stmt : nestedStatements) {
+            ((Assembler) stmt).generateCode(out);
+        }
     }
 }

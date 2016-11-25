@@ -79,11 +79,9 @@ public class Method {
     }
 
     public void generateBody(PrintWriter out) {
-        out.println("foo");
+        Assembler.resetLabels();
         for (Statement stmt : body) {
-            if (stmt instanceof Assembler) {
-                ((Assembler) stmt).generateCode(out);
-            }
+            ((Assembler) stmt).generateCode(out);
         }
     }
 
@@ -103,4 +101,13 @@ public class Method {
         }
         return s;
     }
+
+    public void declaration(PrintWriter out) {
+        out.print(".method public " + methodName + "(");
+        for (Variable param : parameters) {
+            out.print(param.getType().toJasmin());
+        }
+        out.println(")" + returnType.toJasmin());
+    }
+
 }

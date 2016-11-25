@@ -53,24 +53,6 @@ public class Klass {
         return fields.containsKey(fieldId);
     }
 
-    public Map<String, Type> getFieldTypes() {
-        Map<String, Type> fields = new HashMap<>();
-        for (Variable v : this.fields.values()) {
-            fields.put(v.getVariableName(), v.getType());
-        }
-        return fields;
-    }
-
-    public Optional<Type> getVarType(String symbol) {
-        if (fields.containsKey(symbol)) {
-            return Optional.of(fields.get(symbol).getType());
-        } else if (symbol.equals("this")) {
-            return Optional.of(new Type(this.className));
-        } else {
-            return Optional.empty();
-        }
-    }
-
     public Optional<Variable> getField(String id) {
         if (fields.containsKey(id)) {
             return Optional.of(fields.get(id));
@@ -121,21 +103,40 @@ public class Klass {
         return className;
     }
 
-    public void generateCode(boolean isMain) throws IOException {
+    public void generateCode() throws IOException {
         File classFile = new File(className + ".j");
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(classFile)));
-        declareClass(out);
-        if (isMain) {
-            out.println(".method public static main([Ljava/lang/String;)V");
-            methods.get("main").get(0).generateBody(out);
-            out.println(".end method");
+        declaration(out);
+        constructor(out);
+        for (List<Method> method : methods.values()) {
+            for (Method m : method) {
+                if (m.getReturnType().equals(new Type("void"))) {
+                    // main method
+                    out.println("\n.method public static main([Ljava/lang/String;)V");
+                } else {
+                    m.declaration(out);
+                }
+                out.println(".limit stack 32");
+                out.println(".limit locals 32");
+                m.generateBody(out);
+                out.println("return");
+                out.println(".end method\n");
+            }
         }
         out.close();
     }
 
-    private void declareClass(PrintWriter out) {
+    private void declaration(PrintWriter out) {
         out.println(".class public " + className);
         out.println(".super java/lang/Object");
+    }
+
+    private void constructor(PrintWriter out) {
+        out.println("\n.method public <init>()V");
+        out.println("aload_0");
+        out.println("invokenonvirtual java/lang/Object/<init>()V");
+        out.println("return");
+        out.println(".end method\n");
     }
 
 }

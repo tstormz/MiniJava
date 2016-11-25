@@ -84,6 +84,23 @@ public class Type {
         }
     }
 
+    public String toJasmin() {
+        if (classType == null) {
+            switch (primitiveType) {
+                case INT:
+                    return "I";
+                case BOOLEAN:
+                    return "Z";
+                case ARRAY:
+                    return "[I";
+                default:
+                    return "ERROR";
+            }
+        } else {
+            return "L" + classType + ";";
+        }
+    }
+
     public String toString() {
         if (classType != null) {
             return classType;

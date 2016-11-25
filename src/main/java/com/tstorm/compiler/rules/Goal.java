@@ -32,7 +32,10 @@ public class Goal {
     }
 
     public void generateCode() throws IOException {
-        mainClass.generateCode(true);
+        mainClass.generateCode();
+        for (Klass k : classes) {
+            k.generateCode();
+        }
     }
 
     public void print() {

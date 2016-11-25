@@ -1,12 +1,15 @@
 package com.tstorm.compiler.rules.expressions;
 
+import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.typechecker.ExpressionVisitor;
+
+import java.io.PrintWriter;
 
 /**
  * Created by tstorm on 11/1/16.
  */
-public class Literal implements Expression {
+public class Literal extends Assembler implements Expression {
 
     private String value;
 
@@ -30,6 +33,13 @@ public class Literal implements Expression {
                 return new Type(Type.Primitive.BOOLEAN);
             default:
                 return new Type(Type.Primitive.INT);
+        }
+    }
+
+    @Override
+    public void generateCode(PrintWriter out) {
+        if (getType().is(Type.Primitive.INT)) {
+            out.println("bipush " + value);
         }
     }
 }

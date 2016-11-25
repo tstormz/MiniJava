@@ -1,14 +1,16 @@
 package com.tstorm.compiler.rules.expressions;
 
+import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.typechecker.ExpressionVisitor;
 
+import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
  * Created by tstorm on 11/1/16.
  */
-public class DefaultExpression implements Expression {
+public class DefaultExpression extends Assembler implements Expression {
 
     private Optional<Expression> expression = Optional.empty();
 
@@ -39,4 +41,14 @@ public class DefaultExpression implements Expression {
         }
     }
 
+    @Override
+    public void generateCode(PrintWriter out) {
+        if (expression.isPresent()) {
+            Assembler expr = (Assembler) expression.get();
+            if (hasLabel()) {
+                expr.setLabel(getLabel().get());
+            }
+            expr.generateCode(out);
+        }
+    }
 }
