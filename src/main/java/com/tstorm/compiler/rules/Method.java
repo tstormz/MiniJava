@@ -78,13 +78,6 @@ public class Method {
         }
     }
 
-    public void generateBody(PrintWriter out) {
-        Assembler.resetLabels();
-        for (Statement stmt : body) {
-            ((Assembler) stmt).generateCode(out);
-        }
-    }
-
     @Override
     public String toString() {
         String s = "   " + returnType + " " + methodName + "()";
@@ -103,6 +96,7 @@ public class Method {
     }
 
     public void declaration(PrintWriter out) {
+        Assembler.reset();
         out.print(".method public " + methodName + "(");
         for (Variable param : parameters) {
             out.print(param.getType().toJasmin());
@@ -110,4 +104,24 @@ public class Method {
         out.println(")" + returnType.toJasmin());
     }
 
+    public void declareLocals(PrintWriter out) {
+        for (Variable local : locals.values()) {
+            local.generateCode(out);
+        }
+    }
+
+    public void generateBody(PrintWriter out) {
+        for (Statement stmt : body) {
+            ((Assembler) stmt).generateCode(out);
+        }
+        if (returnType.getClassName().isPresent()) {
+            if (returnType.getClassName().get().equals("void")) {
+                out.println("return");
+            } else {
+                out.println("areturn");
+            }
+        } else {
+            out.println("ireturn");
+        }
+    }
 }

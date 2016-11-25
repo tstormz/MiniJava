@@ -9,6 +9,7 @@ import java.util.Optional;
 public abstract class Assembler {
 
     private static int labelNum = 1;
+    private static int variableNum = 1;
     private Optional<String> label = Optional.empty();
 
     public abstract void generateCode(PrintWriter out);
@@ -39,8 +40,13 @@ public abstract class Assembler {
         return String.format("L%d:", labelNum++);
     }
 
-    public static void resetLabels() {
+    public int generateId() {
+        return variableNum++;
+    }
+
+    public static void reset() {
         labelNum = 1;
+        variableNum = 1;
     }
 
 }

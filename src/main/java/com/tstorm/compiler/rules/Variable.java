@@ -1,9 +1,13 @@
 package com.tstorm.compiler.rules;
 
+import com.tstorm.compiler.assembler.Assembler;
+
+import java.io.PrintWriter;
+
 /**
  * Created by tstorm on 10/29/16.
  */
-public class Variable {
+public class Variable extends Assembler {
 
     public static final String INIT_ERROR = "'%s' might not have been initialized";
     public static final String ASSIGN_ERROR = "Assignment Error: cannot resolve type for %s";
@@ -11,6 +15,7 @@ public class Variable {
     private final Type type;
     private final String variableName;
     private boolean isInitialized = false;
+    private int id = -1;
 
     public Variable(Type type, String variableName) {
         this.variableName = variableName;
@@ -23,6 +28,10 @@ public class Variable {
 
     public Type getType() {
         return type;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public boolean isInitialized() {
@@ -38,4 +47,10 @@ public class Variable {
         return "   " + type.toString() + " " + variableName;
     }
 
+    @Override
+    public void generateCode(PrintWriter out) {
+        id = generateId();
+        out.println("bipush 0");
+        out.println("istore " + id);
+    }
 }

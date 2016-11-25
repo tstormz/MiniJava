@@ -33,6 +33,6 @@ public class ReturnStatement extends Assembler implements Statement {
 
     @Override
     public void generateCode(PrintWriter out) {
-
+        ((Assembler) expression).generateCode(out);
     }
 }

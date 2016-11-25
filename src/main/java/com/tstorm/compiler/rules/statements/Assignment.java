@@ -40,6 +40,6 @@ public class Assignment extends Assembler implements Statement {
 
     @Override
     public void generateCode(PrintWriter out) {
-        out.println("bar");
+
     }
 }

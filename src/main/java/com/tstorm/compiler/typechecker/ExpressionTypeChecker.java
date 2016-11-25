@@ -102,6 +102,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 System.err.println(OptionalType.UNWRAP_ERROR);
                 return badType();
             } else {
+                expr.bind(v);
                 return type;
             }
         }
@@ -317,6 +318,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (klass.get().hasMethod(methodId)) {
                 Type t = verifyMethodSignature(klass.get().getMethodSet().get(methodId), methodCall);
                 if (!t.is(Type.Primitive.BAD_TYPE)) {
+                    methodCall.setKlass(klass.get());
                     return t;
                 }
             }

@@ -110,26 +110,28 @@ public class Klass {
     }
 
     public void generateCode() throws IOException {
-        Path outputPath = getPath("j");
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputPath.toFile())));
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(getPath("j").toFile())));
         declaration(out);
         constructor(out);
         for (List<Method> method : methods.values()) {
             for (Method m : method) {
-                if (m.getReturnType().equals(new Type("void"))) {
-                    // main method
-                    out.println(".method public static main([Ljava/lang/String;)V");
-                } else {
-                    m.declaration(out);
-                }
-                out.println(".limit stack 32");
-                out.println(".limit locals 32");
-                m.generateBody(out);
-                out.println("return");
-                out.println(".end method\n");
+                generateMethod(m, out);
             }
         }
         out.close();
+    }
+
+    private void generateMethod(Method m, PrintWriter out) {
+        if (m.getReturnType().equals(new Type("void"))) {
+            out.println(".method public static main([Ljava/lang/String;)V");
+        } else {
+            m.declaration(out);
+        }
+        out.println(".limit stack 32");
+        out.println(".limit locals 32");
+        m.declareLocals(out);
+        m.generateBody(out);
+        out.println(".end method\n");
     }
 
     private void declaration(PrintWriter out) {
