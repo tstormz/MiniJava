@@ -188,6 +188,13 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             }
         } else if (expr.getCaller() instanceof Identifier) {
             return resolveMethodCall(expr);
+        } else if (expr.getCaller() instanceof Instance) {
+            if (((Instance) expr.getCaller()).getClassName().isPresent()) {
+                return findClassOfCaller(((Instance) expr.getCaller()).getClassName(), expr);
+            } else {
+                System.err.println("err");
+                return badType();
+            }
         } else {
             System.err.println("err");
             return badType();

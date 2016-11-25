@@ -1,9 +1,14 @@
 package com.tstorm.compiler.rules;
 
 import com.tstorm.compiler.typechecker.TypeChecker;
+import jasmin.ClassFile;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -31,11 +36,12 @@ public class Goal {
         return pass;
     }
 
-    public void generateCode() throws IOException {
+    public Goal generateCode() throws IOException {
         mainClass.generateCode();
         for (Klass k : classes) {
             k.generateCode();
         }
+        return this;
     }
 
     public void print() {
@@ -60,4 +66,27 @@ public class Goal {
         }
     }
 
+    public void compileAndRun() throws Exception {
+        for (Klass k : classes) {
+            compile(k);
+        }
+        compile(mainClass);
+        ProcessBuilder builder = new ProcessBuilder("java", mainClass.getClassName());
+        Process process = builder.directory(new File("build")).start();
+        try (InputStream in = process.getInputStream()) {
+            Scanner scanner = new Scanner(in).useDelimiter("\\A");
+            while (scanner.hasNext()) {
+                System.out.printf(scanner.next());
+            }
+        }
+    }
+
+    private void compile(Klass k) throws Exception {
+        ClassFile classFile = new ClassFile();
+        BufferedReader jFile = new BufferedReader(new FileReader(k.getPath("j").toFile()));
+        classFile.readJasmin(jFile, "", false);
+        try (OutputStream output = Files.newOutputStream(k.getPath("class"))) {
+            classFile.write(output);
+        }
+    }
 }

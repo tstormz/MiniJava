@@ -18,7 +18,6 @@ public class GoalVisitor extends MiniJavaBaseVisitor<Goal> {
     public Goal visitGoal(MiniJavaParser.GoalContext ctx) {
         MainClassVisitor mainClassVisitor = new MainClassVisitor();
         Klass mainClass = ctx.mainClass().accept(mainClassVisitor);
-        classes.add(mainClass);
         ClassDeclarationVisitor classDeclarationVisitor = new ClassDeclarationVisitor();
         for (MiniJavaParser.ClassDeclarationContext klass : ctx.classDeclaration()) {
             classes.add(klass.accept(classDeclarationVisitor));

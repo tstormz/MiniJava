@@ -1,6 +1,8 @@
 package com.tstorm.compiler.rules;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -103,16 +105,20 @@ public class Klass {
         return className;
     }
 
+    public Path getPath(String extension) {
+        return Paths.get(System.getProperty("user.dir"), "build", className + "." + extension);
+    }
+
     public void generateCode() throws IOException {
-        File classFile = new File(className + ".j");
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(classFile)));
+        Path outputPath = getPath("j");
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputPath.toFile())));
         declaration(out);
         constructor(out);
         for (List<Method> method : methods.values()) {
             for (Method m : method) {
                 if (m.getReturnType().equals(new Type("void"))) {
                     // main method
-                    out.println("\n.method public static main([Ljava/lang/String;)V");
+                    out.println(".method public static main([Ljava/lang/String;)V");
                 } else {
                     m.declaration(out);
                 }
