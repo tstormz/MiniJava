@@ -143,6 +143,7 @@ public class TypeChecker extends Visitor {
         if (local.isPresent()) {
             if (checkType(local.get(), statement.getExpression())) {
                 local.get().initialize();
+                statement.getSrcIdentifier().bind(local);
                 return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, local.get().getType()));

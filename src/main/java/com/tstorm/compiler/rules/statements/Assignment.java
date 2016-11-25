@@ -1,10 +1,13 @@
 package com.tstorm.compiler.rules.statements;
 
 import com.tstorm.compiler.assembler.Assembler;
+import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.rules.expressions.Expression;
+import com.tstorm.compiler.rules.expressions.Identifier;
 import com.tstorm.compiler.typechecker.Visitor;
 
 import java.io.PrintWriter;
+import java.util.Optional;
 
 /**
  * Created by tstorm on 11/1/16.
@@ -13,16 +16,20 @@ public class Assignment extends Assembler implements Statement {
 
     public static final String ERROR = "Assignment Error: '%s' is expecting type '%s'";
 
-    private final String srcVariableName;
+    private final Identifier id;
     private final Expression expression;
 
-    public Assignment(String src, Expression expression) {
-        this.srcVariableName = src;
+    public Assignment(Identifier src, Expression expression) {
+        this.id = src;
         this.expression = expression;
     }
 
     public String getSrcVariableName() {
-        return srcVariableName;
+        return id.toString();
+    }
+
+    public Identifier getSrcIdentifier() {
+        return id;
     }
 
     public Expression getExpression() {
@@ -30,7 +37,7 @@ public class Assignment extends Assembler implements Statement {
     }
 
     public String toString() {
-        return srcVariableName + " = " + expression.toString();
+        return id.toString() + " = " + expression.toString();
     }
 
     @Override
@@ -40,6 +47,17 @@ public class Assignment extends Assembler implements Statement {
 
     @Override
     public void generateCode(PrintWriter out) {
-
+        Optional<Variable> variable = id.getVariable();
+        if (variable.isPresent()) {
+            int id = variable.get().getId();
+            if (id >= 0) {
+                ((Assembler) expression).generateCode(out);
+                out.println("istore " + id);
+            } else {
+                System.err.println(Identifier.UNDECLARED);
+            }
+        } else {
+            System.err.println(Identifier.UNBOUND);
+        }
     }
 }

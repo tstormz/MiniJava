@@ -13,6 +13,8 @@ import java.util.Optional;
  */
 public class Identifier extends Assembler implements Expression {
 
+    public static final String UNBOUND = "Error: Identifier is not bound";
+    public static final String UNDECLARED = "Error: Identifier not declared";
     private String name;
     private Optional<Variable> variable;
 
@@ -28,6 +30,10 @@ public class Identifier extends Assembler implements Expression {
         this.variable = v;
     }
 
+    public Optional<Variable> getVariable() {
+        return variable;
+    }
+
     @Override
     public Type accept(ExpressionVisitor v) {
         return v.visit(this);
@@ -40,10 +46,10 @@ public class Identifier extends Assembler implements Expression {
             if (id >= 0){
                 out.println("iload " + id);
             } else {
-                System.err.println("Error: Identifier not declared");
+                System.err.println(UNDECLARED);
             }
         } else {
-            System.err.println("Error: Identifier is not bound");
+            System.err.println(UNBOUND);
         }
     }
 }
