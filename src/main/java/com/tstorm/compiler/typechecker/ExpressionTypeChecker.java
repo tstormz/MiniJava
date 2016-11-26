@@ -188,7 +188,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return badType();
             }
         } else if (expr.getCaller() instanceof Identifier) {
-            return resolveMethodCall(expr);
+            return resolveMethodCall(expr, (Identifier) expr.getCaller());
         } else if (expr.getCaller() instanceof Instance) {
             if (((Instance) expr.getCaller()).getClassName().isPresent()) {
                 return findClassOfCaller(((Instance) expr.getCaller()).getClassName(), expr);
@@ -208,7 +208,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
      * @param methodCall the method call
      * @return the return type of the method
      */
-    private Type resolveMethodCall(MethodCall methodCall) {
+    private Type resolveMethodCall(MethodCall methodCall, Identifier caller) {
         String callerId = methodCall.getCaller().toString();
         if (callerId.equals("this")) {
             return confirmMethodExists(Optional.of(klass), methodCall);
@@ -221,6 +221,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return badType();
             } else {
                 if (local.get().isInitialized()) {
+                    caller.bind(local);
                     return findClassOfCaller(local.get().getType().getClassName(), methodCall);
                 } else {
                     System.err.println(String.format(Variable.INIT_ERROR, local.get().getVariableName()));
@@ -235,6 +236,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return badType();
             } else {
                 if (field.get().isInitialized()) {
+                    caller.bind(field);
                     return findClassOfCaller(field.get().getType().getClassName(), methodCall);
                 } else {
                     System.err.println(String.format(Variable.INIT_ERROR, field.get().getVariableName()));
@@ -249,6 +251,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
                 return badType();
             } else {
                 if (inherited.get().isInitialized()) {
+                    caller.bind(inherited);
                     return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
                 } else {
                     System.err.println(String.format(Variable.INIT_ERROR, inherited.get().getVariableName()));

@@ -53,8 +53,10 @@ public class Variable extends Assembler {
 
     public void declare(PrintWriter out) {
         init();
-        out.println("bipush 0");
-        out.println("istore " + id);
+        if (type.isPrimitive()) {
+            out.println("bipush 0");
+            out.println("istore " + id);
+        }
     }
 
     @Override

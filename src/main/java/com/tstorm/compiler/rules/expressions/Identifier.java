@@ -45,7 +45,7 @@ public class Identifier extends Assembler implements Expression {
         if (variable.isPresent()) {
             int id = variable.get().getId();
             if (id >= 0){
-                out.println("iload " + id);
+                load(out, variable.get());
             } else {
                 getField(out, variable.get());
             }
@@ -54,6 +54,15 @@ public class Identifier extends Assembler implements Expression {
         } else {
             System.err.println(String.format(UNBOUND, name));
         }
+    }
+
+    private void load(PrintWriter out, Variable variable) {
+        if (variable.getType().isPrimitive()) {
+            out.print("iload ");
+        } else {
+            out.print("aload ");
+        }
+        out.println(variable.getId());
     }
 
     private void getField(PrintWriter out, Variable variable) {

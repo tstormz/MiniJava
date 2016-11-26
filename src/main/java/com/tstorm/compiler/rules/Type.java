@@ -68,6 +68,10 @@ public class Type {
         return Optional.ofNullable(classType);
     }
 
+    public boolean isPrimitive() {
+        return classType == null;
+    }
+
     public boolean equals(Type t) {
         if (t.getClassName().isPresent()) {
             if (classType != null) {

@@ -52,14 +52,23 @@ public class Assignment extends Assembler implements Statement {
         if (variable.isPresent()) {
             int id = variable.get().getId();
             if (id >= 0) {
-                ((Assembler) expression).generateCode(out);
-                out.println("istore " + id);
+                store(out, variable.get());
             } else {
                 putField(out, variable.get());
             }
         } else {
             System.err.println(String.format(Identifier.UNBOUND, id.toString()));
         }
+    }
+
+    private void store(PrintWriter out, Variable variable) {
+        ((Assembler) expression).generateCode(out);
+        if (variable.getType().isPrimitive()) {
+            out.print("istore ");
+        } else {
+            out.print("astore ");
+        }
+        out.println(variable.getId());
     }
 
     private void putField(PrintWriter out, Variable v) {
