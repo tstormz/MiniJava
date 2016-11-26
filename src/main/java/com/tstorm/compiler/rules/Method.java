@@ -105,8 +105,12 @@ public class Method {
     }
 
     public void declareLocals(PrintWriter out) {
+        // reserve the first ids for parameters
+        for (Variable param : parameters) {
+            param.init();
+        }
         for (Variable local : locals.values()) {
-            local.generateCode(out);
+            local.declare(out);
         }
     }
 

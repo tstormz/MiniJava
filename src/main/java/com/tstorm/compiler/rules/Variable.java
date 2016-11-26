@@ -47,10 +47,18 @@ public class Variable extends Assembler {
         return "   " + type.toString() + " " + variableName;
     }
 
-    @Override
-    public void generateCode(PrintWriter out) {
+    public void init() {
         id = generateId();
+    }
+
+    public void declare(PrintWriter out) {
+        init();
         out.println("bipush 0");
         out.println("istore " + id);
+    }
+
+    @Override
+    public void generateCode(PrintWriter out) {
+
     }
 }

@@ -1,6 +1,7 @@
 package com.tstorm.compiler.rules.statements;
 
 import com.tstorm.compiler.assembler.Assembler;
+import com.tstorm.compiler.assembler.KlassPrintWriter;
 import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.rules.expressions.Expression;
 import com.tstorm.compiler.rules.expressions.Identifier;
@@ -54,10 +55,22 @@ public class Assignment extends Assembler implements Statement {
                 ((Assembler) expression).generateCode(out);
                 out.println("istore " + id);
             } else {
-                System.err.println(Identifier.UNDECLARED);
+                putField(out, variable.get());
             }
         } else {
-            System.err.println(Identifier.UNBOUND);
+            System.err.println(String.format(Identifier.UNBOUND, id.toString()));
         }
+    }
+
+    private void putField(PrintWriter out, Variable v) {
+        out.println("aload_0");
+        ((Assembler) expression).generateCode(out);
+        out.print("putfield ");
+        if (out instanceof KlassPrintWriter) {
+            out.print(((KlassPrintWriter) out).getCurrentKlass().getClassName() + "/");
+        } else {
+            System.err.println("Error: requires KlassPrintWriter");
+        }
+        out.println(String.format("%s %s", v.getVariableName(), v.getType().toJasmin()));
     }
 }

@@ -1,5 +1,7 @@
 package com.tstorm.compiler.rules;
 
+import com.tstorm.compiler.assembler.KlassPrintWriter;
+
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -110,8 +112,9 @@ public class Klass {
     }
 
     public void generateCode() throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(getPath("j").toFile())));
+        KlassPrintWriter out = new KlassPrintWriter(this, new BufferedWriter(new FileWriter(getPath("j").toFile())));
         declaration(out);
+        fields(out);
         constructor(out);
         for (List<Method> method : methods.values()) {
             for (Method m : method) {
@@ -137,6 +140,15 @@ public class Klass {
     private void declaration(PrintWriter out) {
         out.println(".class public " + className);
         out.println(".super java/lang/Object");
+    }
+
+    private void fields(PrintWriter out) {
+        out.println();
+        for (Variable field : fields.values()) {
+            String fieldName = field.getVariableName();
+            String type = field.getType().toJasmin();
+            out.println(".field public " + fieldName + " " + type + " = 0");
+        }
     }
 
     private void constructor(PrintWriter out) {

@@ -115,9 +115,9 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             } else if (expr instanceof UnwrappedIdentifier) {
                 System.err.println(OptionalType.UNWRAP_ERROR);
             } else {
+                expr.bind(t);
                 return type;
             }
-            return t.get().getType();
         }
         // methods
         Optional<Type> methodType = klass.getMethodType(expr.toString());

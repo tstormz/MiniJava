@@ -79,17 +79,28 @@ public class MethodCall extends Assembler implements Expression {
     @Override
     public void generateCode(PrintWriter out) {
         ((Assembler) caller).generateCode(out);
+        for (Expression arg : args) {
+            ((Assembler) arg).generateCode(out);
+        }
         out.print("invokevirtual ");
         if (owner.isPresent()) {
-            out.print(String.format("%s/%s()", owner.get().getClassName(), methodName));
-            out.println(returnType());
+            methodSignature(out);
         } else {
             System.err.println("Error: Method " + methodName + " doesn't know where he lives");
         }
     }
 
+    private void methodSignature(PrintWriter out) {
+        out.print(String.format("%s/%s(", owner.get().getClassName(), methodName));
+        for (Type arg : argsType) {
+            out.print(arg.toJasmin());
+        }
+        out.println(")" + returnType());
+    }
+
     private String returnType() {
         Klass owner = this.owner.get();
+        // TODO find the right method
         List<Method> methods = owner.getMethodSet().get(methodName);
         return methods.get(0).getReturnType().toJasmin();
     }

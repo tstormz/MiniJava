@@ -155,6 +155,7 @@ public class TypeChecker extends Visitor {
         if (field.isPresent()) {
             if (checkType(field.get(), statement.getExpression())) {
                 field.get().initialize();
+                statement.getSrcIdentifier().bind(field);
                 return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, field.get().getType()));
@@ -166,6 +167,7 @@ public class TypeChecker extends Visitor {
         if (inherited.isPresent()) {
             if (checkType(inherited.get(), statement.getExpression())) {
                 inherited.get().initialize();
+                statement.getSrcIdentifier().bind(inherited);
                 return true;
             } else {
                 System.err.println(String.format(Assignment.ERROR, srcVar, inherited.get().getType()));
