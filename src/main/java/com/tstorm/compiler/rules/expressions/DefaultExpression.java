@@ -44,11 +44,7 @@ public class DefaultExpression extends Assembler implements Expression {
     @Override
     public void generateCode(PrintWriter out) {
         if (expression.isPresent()) {
-            Assembler expr = (Assembler) expression.get();
-            if (hasLabel()) {
-                expr.setLabel(getLabel().get());
-            }
-            expr.generateCode(out);
+            ((Assembler) expression.get()).generateCode(out);
         }
     }
 }

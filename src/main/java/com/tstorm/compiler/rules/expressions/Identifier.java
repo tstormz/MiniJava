@@ -62,7 +62,7 @@ public class Identifier extends Assembler implements Expression {
         } else {
             out.print("aload ");
         }
-        out.println(variable.getId());
+        out.println(variable.getId() + " ; " + variable.toString());
     }
 
     private void getField(PrintWriter out, Variable variable) {

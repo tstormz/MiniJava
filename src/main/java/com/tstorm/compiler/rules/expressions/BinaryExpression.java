@@ -47,12 +47,9 @@ public class BinaryExpression extends Assembler implements Expression {
             ((Assembler) right).generateCode(out);
             ((Assembler) left).generateCode(out);
         } else if (op.equals("&&")) {
-            Assembler leftExpr = (Assembler) left;
-            leftExpr.setLabel(getLabel().get());
-            leftExpr.generateCode(out);
-            Assembler rightExpr = (Assembler) right;
-            rightExpr.setLabel(getLabel().get());
-            rightExpr.generateCode(out);
+            ((Assembler) left).generateCode(out);
+            ((Assembler) right).generateCode(out);
+            out.println("iand");
         } else {
             ((Assembler) left).generateCode(out);
             ((Assembler) right).generateCode(out);
@@ -68,11 +65,15 @@ public class BinaryExpression extends Assembler implements Expression {
                 out.println("imul");
                 break;
             case "<":
-                if (hasLabel()) {
-                    out.println("if_icmpge " + getLabelUse().get());
-                } else {
-                    System.err.println("expecting label");
-                }
+                Label greaterThan = generateLabel();
+                Label done = generateLabel();
+                out.println("isub");
+                out.println("ifge " + greaterThan.getLabelUse());
+                out.println("bipush 1 ; true compare");
+                out.println("goto " + done.getLabelUse());
+                out.println(greaterThan.getLabel());
+                out.println("bipush 0 ; false compare");
+                out.println(done.getLabel());
                 break;
         }
     }

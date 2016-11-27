@@ -44,7 +44,7 @@ public class Variable extends Assembler {
 
     @Override
     public String toString() {
-        return "   " + type.toString() + " " + variableName;
+        return type.toString() + " " + variableName;
     }
 
     public void init() {
@@ -55,7 +55,7 @@ public class Variable extends Assembler {
         init();
         if (type.isPrimitive()) {
             out.println("bipush 0");
-            out.println("istore " + id);
+            out.println(String.format("istore %s ; %s", id, toString()));
         }
     }
 

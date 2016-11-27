@@ -40,6 +40,12 @@ public class Literal extends Assembler implements Expression {
     public void generateCode(PrintWriter out) {
         if (getType().is(Type.Primitive.INT)) {
             out.println("bipush " + value);
+        } else if (getType().is(Type.Primitive.BOOLEAN)) {
+            if (value.equals("true")) {
+                out.println("bipush 1");
+            } else {
+                out.println("bipush 0");
+            }
         }
     }
 }

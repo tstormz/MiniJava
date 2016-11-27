@@ -92,6 +92,9 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(Identifier expr) {
+        if (expr.toString().equals("this")) {
+            return new Type(klass.getClassName());
+        }
         // locals and parameters
         Optional<Variable> v = currentMethod.findVariable(expr.toString());
         if (v.isPresent()) {

@@ -46,17 +46,15 @@ public class Conditional extends Assembler implements Statement {
 
     @Override
     public void generateCode(PrintWriter out) {
-        String elseStmt = generateLabel();
-        String done = generateLabel();
-        Assembler testExpr = (Assembler) expression;
-        testExpr.setLabel(elseStmt);
-        testExpr.generateCode(out);
-//        out.println(elseStmt.substring(0, elseStmt.length() - 1));
+        ((Assembler) expression).generateCode(out);
+        Label elseStmt = generateLabel();
+        out.println("ifeq " + elseStmt.getLabelUse() + " ; goto else");
         ((Assembler) ifStatement).generateCode(out);
-        out.println("goto " + done.substring(0, done.length() - 1));
-        out.println(elseStmt);
+        Label done = generateLabel();
+        out.println("goto " + done.getLabelUse() + " ; goto done");
+        out.println(elseStmt.getLabel());
         ((Assembler) elseStatement).generateCode(out);
-        out.println(done);
+        out.println(done.getLabel());
     }
 
 }
