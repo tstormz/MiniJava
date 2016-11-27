@@ -54,7 +54,7 @@ public class Variable extends Assembler {
     public void declare(PrintWriter out) {
         init();
         if (type.isPrimitive()) {
-            out.println("bipush 0");
+            out.println("ldc 0");
             out.println(String.format("istore %s ; %s", id, toString()));
         }
     }

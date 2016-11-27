@@ -39,7 +39,7 @@ public class Literal extends Assembler implements Expression {
     @Override
     public void generateCode(PrintWriter out) {
         if (getType().is(Type.Primitive.INT)) {
-            out.println("bipush " + value);
+            out.println("ldc " + value);
         } else if (getType().is(Type.Primitive.BOOLEAN)) {
             if (value.equals("true")) {
                 out.println("bipush 1");

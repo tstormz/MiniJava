@@ -40,7 +40,19 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
 
     @Override
     public Type visit(ArrayRef expr) {
-        return new Type(Type.Primitive.INT);
+        Type array = expr.getArray().accept(this);
+        Type index = expr.getIndex().accept(this);
+        if (array.is(Type.Primitive.ARRAY)) {
+            if (index.is(Type.Primitive.INT)) {
+                return new Type(Type.Primitive.INT);
+            } else {
+                System.err.println("Array Reference Error: index should be an int");
+                return badType();
+            }
+        } else {
+            System.err.println("Array Reference Error: variable not of type int[]");
+            return badType();
+        }
     }
 
     @Override

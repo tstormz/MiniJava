@@ -69,7 +69,7 @@ public class Type {
     }
 
     public boolean isPrimitive() {
-        return classType == null;
+        return classType == null && !this.is(Primitive.ARRAY);
     }
 
     public boolean equals(Type t) {

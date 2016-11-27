@@ -234,6 +234,7 @@ public class TypeChecker extends Visitor {
             if (local.get().isInitialized()) {
                 boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
                 boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                statement.getDestIdentifier().bind(local);
                 return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");
@@ -245,6 +246,7 @@ public class TypeChecker extends Visitor {
             if (field.get().isInitialized()) {
                 boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
                 boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                statement.getDestIdentifier().bind(field);
                 return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");
@@ -256,6 +258,7 @@ public class TypeChecker extends Visitor {
             if (inherited.get().isInitialized()) {
                 boolean assignCheck = requireInt(assignment, ElementAssignment.ASSIGN_ERROR);
                 boolean indexCheck = requireInt(index, ElementAssignment.ASSIGN_ERROR);
+                statement.getDestIdentifier().bind(inherited);
                 return assignCheck && indexCheck;
             } else {
                 System.err.println("array not initialized");

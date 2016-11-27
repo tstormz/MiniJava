@@ -31,6 +31,10 @@ public class Instance extends Assembler implements Expression {
         return arrayIndex;
     }
 
+    public boolean isArray() {
+        return !className.isPresent();
+    }
+
     @Override
     public Type accept(ExpressionVisitor v) {
         return v.visit(this);
@@ -46,10 +50,21 @@ public class Instance extends Assembler implements Expression {
 
     @Override
     public void generateCode(PrintWriter out) {
-        if (className.isPresent()) {
-            out.println("new " + className.get());
-            out.println("dup");
-            out.println("invokespecial " + className.get() + "/<init>()V");
+        if (isArray()) {
+            generateArray(out);
+        } else {
+            generateObject(out);
         }
+    }
+
+    private void generateObject(PrintWriter out) {
+        out.println("new " + className.get());
+        out.println("dup");
+        out.println("invokespecial " + className.get() + "/<init>()V");
+    }
+
+    private void generateArray(PrintWriter out) {
+        ((Assembler) arrayIndex).generateCode(out);
+        out.println("newarray int");
     }
 }

@@ -15,7 +15,6 @@ import java.util.Optional;
 public class Identifier extends Assembler implements Expression {
 
     public static final String UNBOUND = "Error: Identifier %s is not bound";
-    public static final String UNDECLARED = "Error: Identifier not declared";
     private Optional<Variable> variable = Optional.empty();
     private String name;
 

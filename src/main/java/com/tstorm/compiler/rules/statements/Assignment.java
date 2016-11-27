@@ -68,7 +68,7 @@ public class Assignment extends Assembler implements Statement {
         } else {
             out.print("astore ");
         }
-        out.println(variable.getId());
+        out.println(variable.getId() + " ; " + variable.toString());
     }
 
     private void putField(PrintWriter out, Variable v) {
