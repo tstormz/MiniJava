@@ -208,11 +208,11 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
             if (((Instance) expr.getCaller()).getClassName().isPresent()) {
                 return findClassOfCaller(((Instance) expr.getCaller()).getClassName(), expr);
             } else {
-                System.err.println("err");
+                System.err.println("error: ExpressionTypeChecker::methodcall");
                 return badType();
             }
         } else {
-            System.err.println("err");
+            System.err.println("error: ExpressionTypeChecker::methodcall");
             return badType();
         }
     }
@@ -230,52 +230,34 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         }
         Optional<Variable> local = currentMethod.findVariable(callerId);
         if (local.isPresent()) {
-            if (local.get().getType() instanceof OptionalType
-                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println(OptionalType.USE_ERROR);
-                return badType();
-            } else {
-                if (local.get().isInitialized()) {
-                    caller.bind(local);
-                    return findClassOfCaller(local.get().getType().getClassName(), methodCall);
-                } else {
-                    System.err.println(String.format(Variable.INIT_ERROR, local.get().getVariableName()));
-                }
-            }
+            return checkVariable(local, caller, methodCall);
         }
         Optional<Variable> field = klass.getField(callerId);
         if (field.isPresent()) {
-            if (field.get().getType() instanceof OptionalType
-                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println(OptionalType.USE_ERROR);
-                return badType();
-            } else {
-                if (field.get().isInitialized()) {
-                    caller.bind(field);
-                    return findClassOfCaller(field.get().getType().getClassName(), methodCall);
-                } else {
-                    System.err.println(String.format(Variable.INIT_ERROR, field.get().getVariableName()));
-                }
-            }
+            return checkVariable(field, caller, methodCall);
         }
         Optional<Variable> inherited = findInheritedCaller(klass.getParent(), callerId);
         if (inherited.isPresent()) {
-            if (inherited.get().getType() instanceof OptionalType
-                    && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
-                System.err.println(OptionalType.USE_ERROR);
-                return badType();
-            } else {
-                if (inherited.get().isInitialized()) {
-                    caller.bind(inherited);
-                    return findClassOfCaller(inherited.get().getType().getClassName(), methodCall);
-                } else {
-                    System.err.println(String.format(Variable.INIT_ERROR, inherited.get().getVariableName()));
-                    return badType();
-                }
-            }
+            return checkVariable(inherited, caller, methodCall);
         } else {
             System.err.println(String.format(Type.NOT_FOUND_ERROR, callerId));
             return badType();
+        }
+    }
+
+    private Type checkVariable(Optional<Variable> v, Identifier caller, MethodCall methodCall) {
+        if (v.get().getType() instanceof OptionalType
+                && !(methodCall.getCaller() instanceof UnwrappedIdentifier)) {
+            System.err.println(OptionalType.USE_ERROR);
+            return badType();
+        } else {
+            if (v.get().isInitialized()) {
+                caller.bind(v);
+                return findClassOfCaller(v.get().getType().getClassName(), methodCall);
+            } else {
+                System.err.println(String.format(Variable.INIT_ERROR, v.get().getVariableName()));
+                return badType();
+            }
         }
     }
 

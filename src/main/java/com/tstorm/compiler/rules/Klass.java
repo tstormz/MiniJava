@@ -139,7 +139,11 @@ public class Klass {
 
     private void declaration(PrintWriter out) {
         out.println(".class public " + className);
-        out.println(".super java/lang/Object");
+        if (parent.isPresent()) {
+            out.println(".super " + parent.get().getClassName());
+        } else {
+            out.println(".super java/lang/Object");
+        }
     }
 
     private void fields(PrintWriter out) {
@@ -154,7 +158,11 @@ public class Klass {
     private void constructor(PrintWriter out) {
         out.println("\n.method public <init>()V");
         out.println("aload_0");
-        out.println("invokenonvirtual java/lang/Object/<init>()V");
+        if (parent.isPresent()) {
+            out.println(String.format("invokenonvirtual %s/<init>()V", parent.get().getClassName()));
+        } else {
+            out.println("invokenonvirtual java/lang/Object/<init>()V");
+        }
         out.println("return");
         out.println(".end method\n");
     }
