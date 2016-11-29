@@ -4,7 +4,9 @@ import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.rules.Klass;
 import com.tstorm.compiler.rules.Method;
 import com.tstorm.compiler.rules.Type;
+import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.typechecker.ExpressionVisitor;
+import com.tstorm.compiler.visitors.GoalVisitor;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -92,17 +94,55 @@ public class MethodCall extends Assembler implements Expression {
 
     private void methodSignature(PrintWriter out) {
         out.print(String.format("%s/%s(", owner.get().getClassName(), methodName));
-        for (Type arg : argsType) {
-            out.print(arg.toJasmin());
+        List<Method> methods = owner.get().getMethodSet().get(methodName);
+        Method method = getMethod(methods, argsType);
+        assert method != null;
+        for (Variable param : method.getParameters()) {
+            out.print(param.getType().toJasmin());
         }
         out.println(")" + returnType());
     }
 
     private String returnType() {
         Klass owner = this.owner.get();
-        // TODO find the right method
-        List<Method> methods = owner.getMethodSet().get(methodName);
-        return methods.get(0).getReturnType().toJasmin();
+        Method method = getMethod(owner.getMethodSet().get(methodName), argsType);
+        assert method != null;
+        return method.getReturnType().toJasmin();
+    }
+
+    private Method getMethod(List<Method> methods, List<Type> args) {
+        for (Method m : methods) {
+            if (args.size() == m.getParameters().size()) {
+                if (parametersMatch(m.getParameters(), args)) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean parametersMatch(List<Variable> params, List<Type> args) {
+        boolean match = true;
+        for (int i = 0; i < args.size(); i++) {
+            match &= checkTypesMatch(params.get(i).getType(), args.get(i));
+        }
+        return match;
+    }
+
+    private boolean checkTypesMatch(Type param, Type arg) {
+        if (param.equals(arg)) {
+            return true;
+        } else if (arg.getClassName().isPresent()) {
+            Optional<Klass> argType = GoalVisitor.findClass(arg.getClassName().get());
+            if (argType.isPresent() && argType.get().hasParent()) {
+                Klass argSuperType = argType.get().getParent().get();
+                return checkTypesMatch(param, new Type(argSuperType.getClassName()));
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 }

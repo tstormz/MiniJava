@@ -2,6 +2,7 @@ package com.tstorm.compiler.rules.expressions;
 
 import com.tstorm.compiler.assembler.Assembler;
 import com.tstorm.compiler.assembler.KlassPrintWriter;
+import com.tstorm.compiler.rules.Klass;
 import com.tstorm.compiler.rules.Type;
 import com.tstorm.compiler.rules.Variable;
 import com.tstorm.compiler.typechecker.ExpressionVisitor;
@@ -51,6 +52,32 @@ public class Identifier extends Assembler implements Expression {
         } else if(name.equals("this")) {
             out.println("aload_0");
         } else {
+            if (out instanceof KlassPrintWriter) {
+                inheritField((KlassPrintWriter) out);
+            } else {
+                System.err.println("requires KlassPrintWriter");
+            }
+        }
+    }
+
+    private void inheritField(KlassPrintWriter out) {
+        Klass klass = out.getCurrentKlass();
+        if (klass.hasParent()) {
+            inheritField(klass.getParent(), out);
+        } else {
+            System.err.println(String.format(UNBOUND, name));
+        }
+    }
+
+    private void inheritField(Optional<Klass> parent, PrintWriter out) {
+        if (parent.isPresent()) {
+            if (parent.get().hasField(name)) {
+                variable = parent.get().getField(name);
+                getField(out, parent.get(), variable.get());
+            } else {
+                inheritField(parent.get().getParent(), out);
+            }
+        } else {
             System.err.println(String.format(UNBOUND, name));
         }
     }
@@ -73,5 +100,10 @@ public class Identifier extends Assembler implements Expression {
             System.err.println("Error: requires KlassPrintWriter");
         }
         out.println(variable.getVariableName() + " " + variable.getType().toJasmin());
+    }
+
+    private void getField(PrintWriter out, Klass k, Variable v) {
+        out.println("aload_0");
+        out.println(String.format("getfield %s/%s %s", k.getClassName(), name, v.getType().toJasmin()));
     }
 }
