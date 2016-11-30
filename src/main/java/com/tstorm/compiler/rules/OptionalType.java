@@ -7,6 +7,7 @@ public class OptionalType extends Type {
 
     public static final String UNWRAP_ERROR = "can't use ! on non-optional datatype";
     public static final String USE_ERROR = "Error: using optional value without unwrapping it's value";
+    private boolean booleanContext = false;
 
     public OptionalType(Primitive primitive) {
         super(primitive);

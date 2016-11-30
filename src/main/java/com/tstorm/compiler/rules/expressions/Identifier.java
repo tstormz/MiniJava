@@ -44,7 +44,7 @@ public class Identifier extends Assembler implements Expression {
     public void generateCode(PrintWriter out) {
         if (variable.isPresent()) {
             int id = variable.get().getId();
-            if (id >= 0){
+            if (id >= 0) {
                 load(out, variable.get());
             } else {
                 getField(out, variable.get());
@@ -83,12 +83,16 @@ public class Identifier extends Assembler implements Expression {
     }
 
     private void load(PrintWriter out, Variable variable) {
-        if (variable.getType().isPrimitive()) {
-            out.print("iload ");
+        if (variable.isInitialized()) {
+            if (variable.getType().isPrimitive()) {
+                out.print("iload ");
+            } else {
+                out.print("aload ");
+            }
+            out.println(variable.getId() + " ; " + variable.toString());
         } else {
-            out.print("aload ");
+            out.println("aconst_null");
         }
-        out.println(variable.getId() + " ; " + variable.toString());
     }
 
     private void getField(PrintWriter out, Variable variable) {

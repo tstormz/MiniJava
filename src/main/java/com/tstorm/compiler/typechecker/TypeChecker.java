@@ -2,6 +2,7 @@ package com.tstorm.compiler.typechecker;
 
 import com.tstorm.compiler.rules.*;
 import com.tstorm.compiler.rules.expressions.Expression;
+import com.tstorm.compiler.rules.expressions.Identifier;
 import com.tstorm.compiler.rules.statements.*;
 import com.tstorm.compiler.visitors.GoalVisitor;
 

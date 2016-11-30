@@ -151,7 +151,7 @@ public class Klass {
         for (Variable field : fields.values()) {
             String fieldName = field.getVariableName();
             String type = field.getType().toJasmin();
-            out.println(".field public " + fieldName + " " + type + " = 0");
+            out.println(".field public " + fieldName + " " + type);
         }
     }
 

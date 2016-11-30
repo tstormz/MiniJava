@@ -112,7 +112,9 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (v.isPresent()) {
             Type type = v.get().getType();
             if (type instanceof OptionalType) {
-                return tryUnwrapping(expr, type);
+                Type t = tryUnwrapping(expr, type);
+                expr.bind(v);
+                return t;
             } else if (expr instanceof UnwrappedIdentifier) {
                 System.err.println(OptionalType.UNWRAP_ERROR);
                 return badType();
@@ -126,6 +128,7 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (t.isPresent()) {
             Type type = t.get().getType();
             if (type instanceof OptionalType) {
+                expr.bind(t);
                 return tryUnwrapping(expr, type);
             } else if (expr instanceof UnwrappedIdentifier) {
                 System.err.println(OptionalType.UNWRAP_ERROR);
