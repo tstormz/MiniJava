@@ -383,10 +383,19 @@ public class ExpressionTypeChecker extends ExpressionVisitor {
         if (arg.getClassName().isPresent()) {
             argKlass = GoalVisitor.findClass(arg.getClassName().get());
         }
-        if (param.equals(arg)) {
+        if (param.equals(arg) && !isOptionalError(param, arg)) {
             return true;
         } else if (argKlass.isPresent() && argKlass.get().hasParent()) {
             return typesMatch(param, new Type(argKlass.get().getParentName().get()));
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isOptionalError(Type param, Type arg) {
+        if ((arg instanceof OptionalType) && !(param instanceof OptionalType)) {
+            System.err.println(OptionalType.USE_ERROR);
+            return true;
         } else {
             return false;
         }
